@@ -49,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+<<<<<<< HEAD
   void _showSignUpPage() {
     Navigator.push(
       context,
@@ -63,6 +64,8 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+=======
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: SingleChildScrollView(
             child: Column(
+<<<<<<< HEAD
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 32),
@@ -94,10 +98,19 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF3A4668),
                   ),
+=======
+              children: [
+                const Icon(Icons.directions_car, size: 72, color: Colors.indigo),
+                const SizedBox(height: 24),
+                const Text(
+                  'Yoldaş\'a Hoş Geldin!',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
                 ),
                 const SizedBox(height: 32),
                 TextField(
                   controller: _usernameController,
+<<<<<<< HEAD
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.email_outlined),
                     labelText: 'Email or phone number',
@@ -107,12 +120,18 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
                     ),
+=======
+                  decoration: const InputDecoration(
+                    labelText: 'Kullanıcı Adı',
+                    border: OutlineInputBorder(),
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
                   ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
+<<<<<<< HEAD
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.vpn_key_outlined),
                     labelText: 'Password',
@@ -146,6 +165,14 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
+=======
+                  decoration: const InputDecoration(
+                    labelText: 'Şifre',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 24),
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -154,9 +181,12 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Colors.indigo,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
+<<<<<<< HEAD
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+=======
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
                     ),
                     child: const Text('Giriş Yap'),
                   ),
@@ -169,7 +199,10 @@ class _LoginPageState extends State<LoginPage> {
                       style: const TextStyle(color: Colors.red),
                     ),
                   ),
+<<<<<<< HEAD
                 const SizedBox(height: 32),
+=======
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
               ],
             ),
           ),
@@ -179,6 +212,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
+<<<<<<< HEAD
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -758,11 +792,28 @@ class BatteryPage extends StatelessWidget {
               subtitle: '1 year warranty',
             ),
           ],
+=======
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Yoldaş - Ana Sayfa'),
+        centerTitle: true,
+      ),
+      body: const Center(
+        child: Text(
+          'Giriş başarılı! Ana ekrandasın.',
+          style: TextStyle(fontSize: 18),
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
         ),
       ),
     );
   }
 }
+<<<<<<< HEAD
 
 class _BatteryOption extends StatelessWidget {
   final IconData image;
@@ -783,3 +834,5 @@ class _BatteryOption extends StatelessWidget {
     );
   }
 }
+=======
+>>>>>>> d9b0776899463ce83247b5964804ad816cea05d1
