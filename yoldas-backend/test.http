@@ -1,0 +1,58 @@
+@baseUrl = http://localhost:8080/api
+@authToken = 
+
+### ✅ 1️⃣ REGISTER - Kullanıcı kaydı (normal user)
+# @name register
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "123456",
+  "role": "user"
+}
+
+### 🔐 2️⃣ LOGIN - Kullanıcı girişi (normal user)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "123456"
+}
+
+### Token'ı otomatik olarak al
+@authToken = {{login.response.body.token}}
+
+### 🔐 3️⃣ KORUMALI - PROFİLİ GETİR (JWT GEREKİR)
+GET {{baseUrl}}/profile
+Authorization: Bearer {{authToken}}
+
+### ✅ 4️⃣ REGISTER - Yeni admin oluştur
+# @name registerAdmin
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123",
+  "role": "admin"
+}
+
+### 🔐 5️⃣ LOGIN - Admin girişi
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+### Admin token'ı otomatik olarak al
+@adminToken = {{loginAdmin.response.body.token}}
+
+### 🔐 6️⃣ ADMIN DASHBOARD (sadece admin erişebilir)
+GET {{baseUrl}}/admin/dashboard
+Authorization: Bearer {{adminToken}}
