@@ -34,8 +34,8 @@ class YoldasApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
-        // '/signup': (context) => const SignUpPage(),
-        // '/forgot-password': (context) => const ForgotPasswordPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/forgot-password': (context) => const ForgotPasswordPage(),
       },
     );
   }

@@ -3,6 +3,8 @@ import 'package:yoldas/auth_service.dart'; // backend'e login istek atan fonksiy
 import 'home_page.dart';
 import 'signup_page.dart';
 import 'forgot_password_page.dart';
+import 'reset_password_page.dart'; // yeni sayfanın import'u
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

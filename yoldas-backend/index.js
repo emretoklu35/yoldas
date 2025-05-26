@@ -13,10 +13,14 @@ app.use(express.json());
 const authRoutes = require("./routes/auth.routes");
 const profileRoutes = require("./routes/profile.routes");
 const adminRoutes = require("./routes/admin.routes"); // ✅ EKLENDİ
+const forgotPasswordRoute = require("./routes/forgotPassword.routes");
+const resetPasswordRoutes = require("./routes/resetPassword.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes); // ✅ Admin rotası eklendi
+app.use("/api", forgotPasswordRoute);
+app.use("/api", resetPasswordRoutes);
 
 // Root route
 app.get("/", (req, res) => {
@@ -24,7 +28,6 @@ app.get("/", (req, res) => {
 });
 
 // Start server
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
 });
-
