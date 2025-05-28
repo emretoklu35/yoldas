@@ -4,6 +4,8 @@ import 'home_page.dart';
 import 'signup_page.dart';
 import 'forgot_password_page.dart';
 import 'reset_password_page.dart'; // yeni sayfanın import'u
+import 'packege:google_maps_flutter/google_maps_flutter.dart'; // Google Maps için gerekli import
+
 
 
 class LoginPage extends StatefulWidget {

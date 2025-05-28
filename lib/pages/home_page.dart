@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import '../services/location_service.dart';
 import 'battery_page.dart';
 import 'profile_page.dart';
 
@@ -11,6 +13,39 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  String _currentLocation = 'İzmir';
+  String _currentAddress = 'Bornova 4088 sk no:119';
+  bool _isLoadingLocation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLocation();
+  }
+
+  Future<void> _getLocation() async {
+    setState(() {
+      _isLoadingLocation = true;
+    });
+
+    try {
+      Position? position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        String? address = await LocationService.getAddressFromPosition(position);
+        setState(() {
+          _currentLocation = address?.split(',')[0] ?? 'Bilinmeyen Şehir';
+          _currentAddress = address ?? 'Adres bulunamadı';
+        });
+      }
+    } catch (e) {
+      print('Konum hatası: $e');
+      // Hata durumunda varsayılan değerleri koru
+    } finally {
+      setState(() {
+        _isLoadingLocation = false;
+      });
+    }
+  }
 
   void _onBatteryTap() {
     Navigator.push(
@@ -68,14 +103,28 @@ class _HomePageState extends State<HomePage> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.location_on, color: Colors.indigo, size: 32),
+                                _isLoadingLocation 
+                                  ? const SizedBox(
+                                      width: 32, 
+                                      height: 32,
+                                      child: CircularProgressIndicator(strokeWidth: 2)
+                                    )
+                                  : const Icon(Icons.location_on, color: Colors.indigo, size: 32),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: const [
-                                      Text('İzmir', style: TextStyle(fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
-                                      Text('Bornova 4088 sk no:119', style: TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                                    children: [
+                                      Text(
+                                        _currentLocation, 
+                                        style: TextStyle(fontWeight: FontWeight.bold), 
+                                        overflow: TextOverflow.ellipsis
+                                      ),
+                                      Text(
+                                        _currentAddress, 
+                                        style: TextStyle(fontSize: 12, color: Colors.grey), 
+                                        overflow: TextOverflow.ellipsis
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -185,7 +234,7 @@ class _HomePageState extends State<HomePage> {
               unselectedItemColor: Colors.grey,
             ),
           )
-        : Container(); // ProfilePage artık push ile açılıyor
+        : Container();
   }
 }
 

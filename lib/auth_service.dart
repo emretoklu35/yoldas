@@ -6,7 +6,8 @@ final storage = FlutterSecureStorage();
 
 // LOGIN
 Future<bool> login(String email, String password) async {
-  final url = Uri.parse("http://192.168.1.100:8080/api/auth/login");
+  //final url = Uri.parse("http://192.168.1.8:8080/api/auth/login");
+  final url = Uri.parse("http://10.0.2.2:8080/api/auth/login");
 
   final response = await http.post(
     url,
@@ -31,7 +32,7 @@ Future<bool> login(String email, String password) async {
 
 // SIGNUP (KAYIT)
 Future<bool> signup(String email, String password) async {
-  final url = Uri.parse("http://192.168.1.100:8080/api/auth/register");
+  final url = Uri.parse("http://192.168.1.8:8080/api/auth/register");
 
   final response = await http.post(
     url,
