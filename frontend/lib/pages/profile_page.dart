@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import 'personal_details_page.dart';
+import 'locations_page.dart';
+import 'vehicles_page.dart';
+import 'orders_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -86,22 +90,34 @@ class ProfilePage extends StatelessWidget {
                     _ProfileMenuItem(
                       icon: Icons.person_outline,
                       text: 'Kişisel Bilgilerim',
-                      onTap: () => _showInfoDialog(context, 'Kişisel Bilgilerim'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const PersonalDetailsPage()),
+                      ),
                     ),
                     _ProfileMenuItem(
                       icon: Icons.location_on_outlined,
                       text: 'Konumlarım',
-                      onTap: () => _showInfoDialog(context, 'Konumlarım'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LocationsPage()),
+                      ),
                     ),
                     _ProfileMenuItem(
                       icon: Icons.directions_car_outlined,
                       text: 'Araçlarım',
-                      onTap: () => _showInfoDialog(context, 'Araçlarım'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const VehiclesPage()),
+                      ),
                     ),
                     _ProfileMenuItem(
                       icon: Icons.receipt_long_outlined,
                       text: 'Siparişlerim',
-                      onTap: () => _showInfoDialog(context, 'Siparişlerim'),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const OrdersPage()),
+                      ),
                     ),
                     _ProfileMenuItem(
                       icon: Icons.account_balance_wallet_outlined,

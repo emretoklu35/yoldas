@@ -4,7 +4,10 @@ import 'package:geocoding/geocoding.dart';
 class LocationService {
   static Future<Position?> getCurrentPosition() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return null;
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings(); // Kullanıcıyı ayarlara yönlendir
+      return null;
+    }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -12,7 +15,10 @@ class LocationService {
       if (permission == LocationPermission.denied) return null;
     }
 
-    if (permission == LocationPermission.deniedForever) return null;
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings(); // Kullanıcıyı uygulama ayarlarına yönlendir
+      return null;
+    }
 
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
