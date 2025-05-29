@@ -1,52 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yoldas.app.bitirme">
+    package="com.yoldas.app">
 
-    <!-- GEREKLİ KONUM İZİNLERİ -->
+    <!-- Konum izinleri -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- Eğer konum servisleri için internet kullanıyorsan, aşağıdaki izin de gereklidir -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Harita kullanımı için ek izin -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:label="yoldas"
-        android:name="${applicationName}"
+        android:label="Yoldaş"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- ✅ Google Maps API anahtarı -->
+        <!-- Google Maps API Anahtarı -->
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
+            android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBH3Sy33T9ULXGTwcq9tMNL7OrhL3auSbI" />
 
-        <!-- Ana Activity -->
+        <!-- Diğer aktiviteler ve yapılandırmalar -->
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTop"
-            android:taskAffinity=""
+            android:label="Yoldaş"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
-
-            <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme" />
-
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:hardwareAccelerated="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Flutter için gerekli -->
-        <meta-data
-            android:name="flutterEmbedding"
-            android:value="2" />
     </application>
-
-    <!-- Flutter text işlemleri için -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT" />
-            <data android:mimeType="text/plain" />
-        </intent>
-    </queries>
 </manifest>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yoldas/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -13,40 +14,39 @@ class _SignUpPageState extends State<SignUpPage> {
   final _confirmPasswordController = TextEditingController();
   String errorText = '';
 
-  void _signUp() {
+  Future<void> _signUp() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
     String confirmPassword = _confirmPasswordController.text;
 
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      setState(() {
-        errorText = 'Tüm alanları doldurun.';
-      });
+      setState(() => errorText = 'Tüm alanları doldurun.');
       return;
     }
     if (!email.contains('@')) {
-      setState(() {
-        errorText = 'Geçerli bir e-posta girin.';
-      });
+      setState(() => errorText = 'Geçerli bir e-posta girin.');
       return;
     }
     if (password.length < 4) {
-      setState(() {
-        errorText = 'Şifre en az 4 karakter olmalı.';
-      });
+      setState(() => errorText = 'Şifre en az 4 karakter olmalı.');
       return;
     }
     if (password != confirmPassword) {
-      setState(() {
-        errorText = 'Şifreler eşleşmiyor.';
-      });
+      setState(() => errorText = 'Şifreler eşleşmiyor.');
       return;
     }
-    // Kayıt başarılı
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Kayıt başarılı! Giriş yapabilirsiniz.')),
-    );
-    Navigator.pop(context);
+    // Backend'e kayıt isteği at
+    bool success = await signup(email, password);
+
+    if (success) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kayıt başarılı! Giriş yapabilirsiniz.')),
+      );
+      Navigator.pop(context);
+    } else {
+      setState(() => errorText = 'Kayıt başarısız. Tekrar deneyin.');
+    }
   }
 
   @override

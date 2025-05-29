@@ -9,13 +9,45 @@ import 'pages/battery_page.dart';
 import 'pages/profile_page.dart';
 import 'pages/charging_page.dart';
 import 'pages/tire_page.dart';
+import 'pages/reset_password_page.dart';
+import 'package:uni_links/uni_links.dart';
+import 'dart:async';
 
 void main() {
   runApp(const YoldasApp());
 }
 
-class YoldasApp extends StatelessWidget {
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+class YoldasApp extends StatefulWidget {
   const YoldasApp({super.key});
+  @override
+  State<YoldasApp> createState() => _YoldasAppState();
+}
+
+class _YoldasAppState extends State<YoldasApp> {
+  StreamSubscription? _sub;
+
+  @override
+  void initState() {
+    super.initState();
+    _sub = uriLinkStream.listen((Uri? uri) {
+      if (uri != null && uri.path == '/reset-password' && uri.queryParameters['token'] != null) {
+        final token = uri.queryParameters['token']!;
+        Navigator.of(navigatorKey.currentContext!).push(
+          MaterialPageRoute(
+            builder: (_) => ResetPasswordPage(token: token),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +66,7 @@ class YoldasApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       initialRoute: '/',
+      navigatorKey: navigatorKey,
       routes: {
         '/': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),

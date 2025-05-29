@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yoldas/auth_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -10,23 +11,33 @@ class ForgotPasswordPage extends StatefulWidget {
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _emailController = TextEditingController();
   String infoText = '';
+  bool _isLoading = false;
 
-  void _resetPassword() {
+  Future<void> _resetPassword() async {
     String email = _emailController.text.trim();
     if (email.isEmpty) {
-      setState(() {
-        infoText = 'E-posta adresinizi girin.';
-      });
+      setState(() => infoText = 'E-posta adresinizi girin.');
       return;
     }
     if (!email.contains('@')) {
-      setState(() {
-        infoText = 'Geçerli bir e-posta girin.';
-      });
+      setState(() => infoText = 'Geçerli bir e-posta girin.');
       return;
     }
+
     setState(() {
-      infoText = 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi (simülasyon).';
+      _isLoading = true;
+      infoText = '';
+    });
+
+    bool success = await requestPasswordReset(email);
+
+    setState(() {
+      _isLoading = false;
+      if (success) {
+        infoText = 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.';
+      } else {
+        infoText = 'Şifre sıfırlama isteği gönderilemedi. Lütfen tekrar deneyin.';
+      }
     });
   }
 
@@ -40,6 +51,20 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              const Text(
+                'Şifrenizi mi unuttunuz?',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -52,8 +77,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _resetPassword,
-                  child: const Text('Şifreyi Sıfırla'),
+                  onPressed: _isLoading ? null : _resetPassword,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Şifreyi Sıfırla'),
                 ),
               ),
               if (infoText.isNotEmpty)
@@ -61,7 +88,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Text(
                     infoText,
-                    style: const TextStyle(color: Colors.green),
+                    style: TextStyle(
+                      color: infoText.contains('gönderildi') ? Colors.green : Colors.red,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
             ],

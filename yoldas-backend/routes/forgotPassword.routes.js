@@ -26,7 +26,7 @@ router.post("/forgot-password", async (req, res) => {
     },
   });
 
-  const resetLink = `http://192.168.1.100:8080/reset-password?token=${resetToken}`;
+  const resetLink = `yoldas://reset-password?token=${resetToken}`;
 
   // ✅ Mail gönder
   await sendMail(
