@@ -1,77 +1,65 @@
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
 
-class BatteryPage extends StatefulWidget {
-  const BatteryPage({super.key});
+class ChargingPage extends StatefulWidget {
+  const ChargingPage({super.key});
 
   @override
-  State<BatteryPage> createState() => _BatteryPageState();
+  State<ChargingPage> createState() => _ChargingPageState();
 }
 
-class _BatteryPageState extends State<BatteryPage> {
-  String? selectedBattery;
-  double batteryCost = 0;
-  double serviceFee = 150;
+class _ChargingPageState extends State<ChargingPage> {
+  String? selectedChargingOption;
+  double chargingCost = 0;
+  double serviceFee = 50; // Default service fee for charging
   double total = 0;
 
-  final List<Map<String, dynamic>> batteryOptions = [
+  final List<Map<String, dynamic>> chargingOptions = [
     {
-      'name': 'Akü Kontrolü',
+      'name': 'Temel Şarj',
+      'price': 150,
+      'description': 'Acil durumlar için yeterli şarj',
+      'duration': '~30 dakika',
+      'imageAsset': 'assets/images/charging_basic.png', // Placeholder görsel yolu
+    },
+    {
+      'name': 'Tam Şarj',
       'price': 300,
-      'description': 'Sadece akü durumu kontrolü',
-      'warranty': '-',
-      'imageAsset': 'assets/images/battery_inspection.png',
+      'description': 'Aracın tam kapasite şarj edilmesi',
+      'duration': '~60-90 dakika',
+      'imageAsset': 'assets/images/charging_full.png', // Placeholder görsel yolu
     },
     {
-      'name': '60 Ah Akü',
-      'price': 2500,
-      'description': 'Küçük araçlar için uygun',
-      'warranty': '24 Ay Garanti',
-      'imageAsset': 'assets/images/battery_60ah.png',
-    },
-    {
-      'name': '70 Ah Akü',
-      'price': 2800,
-      'description': 'Orta boy araçlar için ideal',
-      'warranty': '24 Ay Garanti',
-      'imageAsset': 'assets/images/battery_70ah.png',
-    },
-    {
-      'name': '80 Ah Akü',
-      'price': 3200,
-      'description': 'Büyük araçlar için uygun',
-      'warranty': '24 Ay Garanti',
-      'imageAsset': 'assets/images/battery_80ah.png',
-    },
-    {
-      'name': '90 Ah Akü',
-      'price': 3800,
-      'description': 'SUV ve ticari araçlar için',
-      'warranty': '24 Ay Garanti',
-      'imageAsset': 'assets/images/battery_90ah.png',
+      'name': 'Hızlı Şarj',
+      'price': 500,
+      'description': 'Mümkün olan en hızlı şarj hizmeti',
+      'duration': '~15-30 dakika',
+      'imageAsset': 'assets/images/charging_fast.png', // Placeholder görsel yolu
     },
   ];
 
   void _calculateTotal() {
-    if (selectedBattery != null) {
-      final selected = batteryOptions.firstWhere(
-        (battery) => battery['name'] == selectedBattery,
+    if (selectedChargingOption != null) {
+      final selected = chargingOptions.firstWhere(
+        (option) => option['name'] == selectedChargingOption,
       );
-      batteryCost = (selected['price'] as num).toDouble();
-      serviceFee = (selected['name'] == 'Akü Kontrolü') ? 0 : 150;
+      chargingCost = (selected['price'] as num).toDouble();
+      // Şarj hizmetinde sabit bir hizmet bedeli olabilir veya seçeneğe göre değişebilir.
+      // Şimdilik sabit 50 TL olarak alalım.
+      serviceFee = 50;
     } else {
-      batteryCost = 0;
-      serviceFee = 150;
+      chargingCost = 0;
+      serviceFee = 50; // Default service fee
     }
     setState(() {
-      total = batteryCost + serviceFee;
+      total = chargingCost + serviceFee;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    selectedBattery = batteryOptions.first['name'];
+    selectedChargingOption = chargingOptions.first['name']; // Default selection
     _calculateTotal();
   }
 
@@ -79,7 +67,7 @@ class _BatteryPageState extends State<BatteryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Akü Değişimi'),
+        title: const Text('Şarj Hizmeti'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -89,23 +77,23 @@ class _BatteryPageState extends State<BatteryPage> {
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            "Akü Seçimi",
+            "Şarj Seçenekleri",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          ...batteryOptions.map((battery) => BatteryOptionCard(
-                title: battery['name'] as String,
-                description: battery['description'] as String,
-                warranty: battery['warranty'] as String,
-                price: (battery['price'] as num).toDouble(),
-                selected: selectedBattery == battery['name'],
+          ...chargingOptions.map((option) => ChargingOptionCard(
+                title: option['name'] as String,
+                description: option['description'] as String,
+                duration: option['duration'] as String,
+                price: (option['price'] as num).toDouble(),
+                selected: selectedChargingOption == option['name'],
                 onTap: () {
                   setState(() {
-                    selectedBattery = battery['name'] as String;
+                    selectedChargingOption = option['name'] as String;
                     _calculateTotal();
                   });
                 },
-                imageAsset: battery['imageAsset'] as String?,
+                imageAsset: option['imageAsset'] as String?, // Görsel yolunu iletiyoruz
               )).toList(),
           const SizedBox(height: 24),
           const Text(
@@ -128,11 +116,11 @@ class _BatteryPageState extends State<BatteryPage> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                _buildServiceDetail("Eski akünün sökülmesi"),
-                _buildServiceDetail("Yeni akünün takılması"),
-                _buildServiceDetail("Akü bağlantılarının kontrolü"),
-                _buildServiceDetail("Şarj sisteminin test edilmesi"),
-                _buildServiceDetail("Eski akünün geri dönüşüme gönderilmesi"),
+                _buildServiceDetail("Aracın konumuna ulaşım"),
+                _buildServiceDetail("Şarj ünitesinin güvenli bağlantısı"),
+                _buildServiceDetail("Seçilen şarj süresince bekleme"),
+                _buildServiceDetail("Şarj tamamlanınca bağlantının kesilmesi"),
+                _buildServiceDetail("Ödeme sonrası işlemin sonlandırılması"),
               ],
             ),
           ),
@@ -151,8 +139,7 @@ class _BatteryPageState extends State<BatteryPage> {
             ),
             child: Column(
               children: [
-                _buildSummaryRow(
-                    selectedBattery == 'Akü Kontrolü' ? 'Kontrol Bedeli' : 'Akü Bedeli', batteryCost),
+                _buildSummaryRow('Şarj Bedeli', chargingCost),
                 _buildSummaryRow('Hizmet Bedeli', serviceFee),
                 const Divider(),
                 _buildSummaryRow("Toplam", total, bold: true),
@@ -161,15 +148,15 @@ class _BatteryPageState extends State<BatteryPage> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: batteryCost + serviceFee > 0
+            onPressed: total > 0
                 ? () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (_) => CheckoutPage(
-                          fuelCost: total,
-                          serviceFee: 0,
-                          serviceType: 'battery',
+                          fuelCost: total, // Pass total here
+                          serviceFee: 0, // Service fee is already included in total
+                          serviceType: 'charging',
                         ),
                       ),
                     );
@@ -191,6 +178,7 @@ class _BatteryPageState extends State<BatteryPage> {
     );
   }
 
+  // BatteryPage'den alınan yardımcı widget'lar
   Widget _buildServiceDetail(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -224,20 +212,21 @@ class _BatteryPageState extends State<BatteryPage> {
   }
 }
 
-class BatteryOptionCard extends StatelessWidget {
+// BatteryOptionCard'ın şarj seçenekleri için uyarlanmış hali
+class ChargingOptionCard extends StatelessWidget {
   final String title;
   final String description;
-  final String warranty;
+  final String duration; // Süre bilgisi
   final double price;
   final bool selected;
   final VoidCallback onTap;
   final String? imageAsset;
 
-  const BatteryOptionCard({
+  const ChargingOptionCard({
     super.key,
     required this.title,
     required this.description,
-    required this.warranty,
+    required this.duration,
     required this.price,
     required this.selected,
     required this.onTap,
@@ -270,7 +259,8 @@ class BatteryOptionCard extends StatelessWidget {
                     imageAsset!,
                     width: 40,
                     height: 40,
-                    errorBuilder: (context, error, stackTrace) => Icon(Icons.battery_charging_full, size: 40, color: Colors.grey),
+                    // fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Icon(Icons.electrical_services, size: 40, color: Colors.grey), // Placeholder icon on error
                   ),
                 ),
               Expanded(
@@ -301,9 +291,9 @@ class BatteryOptionCard extends StatelessWidget {
                     Text(description),
                     const SizedBox(height: 4),
                     Text(
-                      warranty,
+                      'Süre: $duration',
                       style: const TextStyle(
-                        color: Colors.green,
+                        color: Colors.blue,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -316,4 +306,4 @@ class BatteryOptionCard extends StatelessWidget {
       ),
     );
   }
-}
+} 

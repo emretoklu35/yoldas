@@ -15,8 +15,8 @@ dependencies:
     sdk: flutter
   http: ^0.13.6                             # ✅ API istekleri için
   flutter_secure_storage: ^9.0.0           # ✅ Token saklamak için
-  geolocator: ^11.0.0
-  geocoding: ^2.2.0
+  geolocator: ^14.0.1
+  geocoding: ^4.0.0
   google_maps_flutter: ^2.12.2
   google_maps_webservice: ^0.0.20-nullsafety.5
 

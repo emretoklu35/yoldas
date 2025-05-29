@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'pages/login_page.dart';
-import 'pages/home_page.dart';             // ✅ HomePage import edildi
-import 'pages/signup_page.dart';          // İstersen kayıt ekranını da route'a alabiliriz
-import 'pages/forgot_password_page.dart'; // Aynı şekilde
+import 'pages/home_page.dart';
+import 'pages/signup_page.dart';
+import 'pages/forgot_password_page.dart';
+import 'pages/fuel_page.dart';
+import 'pages/battery_page.dart';
+import 'pages/profile_page.dart';
+import 'pages/charging_page.dart';
+import 'pages/tire_page.dart';
 
 void main() {
   runApp(const YoldasApp());
@@ -28,14 +33,17 @@ class YoldasApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      
-      // ✅ Route yapısı tanımlandı
       initialRoute: '/',
       routes: {
         '/': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
-        // '/signup': (context) => const SignUpPage(),
-        // '/forgot-password': (context) => const ForgotPasswordPage(),
+        '/fuel': (context) => const FuelPage(),
+        '/battery': (context) => const BatteryPage(),
+        '/profile': (context) => const ProfilePage(),
+        '/signup': (context) => const SignUpPage(),
+        '/forgot-password': (context) => const ForgotPasswordPage(),
+        '/charging': (context) => const ChargingPage(),
+        '/tire': (context) => const TirePage(),
       },
     );
   }

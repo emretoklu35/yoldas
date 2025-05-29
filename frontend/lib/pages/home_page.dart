@@ -78,17 +78,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onBatteryTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BatteryPage()),
-    );
+    Navigator.pushNamed(context, '/battery'); // BatteryPage için route (henüz eklenmedi)
   }
 
   void _onProfileTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ProfilePage()),
-    );
+    Navigator.pushNamed(context, '/profile'); // ProfilePage için route
+  }
+
+  void _onFuelTap() {
+    Navigator.pushNamed(context, '/fuel'); // FuelPage için route
+  }
+
+  void _onChargingTap() {
+    Navigator.pushNamed(context, '/charging'); // ChargingPage için route
+  }
+
+  void _onTireTap() {
+    Navigator.pushNamed(context, '/tire'); // TirePage için route
   }
 
   @override
@@ -224,13 +230,22 @@ class _HomePageState extends State<HomePage> {
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
                         children: [
-                          _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt'),
-                          _HomeIconButton(icon: Icons.ev_station, label: 'Şarj'),
+                          GestureDetector(
+                            onTap: _onFuelTap, // Yakıt seçeneğine tıklama
+                            child: _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt'),
+                          ),
+                          GestureDetector(
+                            onTap: _onChargingTap,
+                            child: _HomeIconButton(icon: Icons.ev_station, label: 'Şarj'),
+                          ),
                           GestureDetector(
                             onTap: _onBatteryTap,
                             child: _HomeIconButton(icon: Icons.battery_charging_full, label: 'Batarya'),
                           ),
-                          _HomeIconButton(icon: Icons.car_repair, label: 'Lastikler'),
+                          GestureDetector(
+                            onTap: _onTireTap,
+                            child: _HomeIconButton(icon: Icons.car_repair, label: 'Lastikler'),
+                          ),
                         ],
                       ),
                     ),
