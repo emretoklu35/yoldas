@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
 
 exports.register = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name, phone, gender, birthday } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required." });
@@ -24,7 +24,11 @@ exports.register = async (req, res) => {
       data: {
         email,
         password: hashedPassword,
-        role: "user", // veya req.body.role, sen ne gönderiyorsan
+        role: "user",
+        name,
+        phone,
+        gender,
+        birthday: birthday ? new Date(birthday) : null,
       },
     });
 
@@ -32,7 +36,15 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       message: "User registered successfully",
-      user: { id: user.id, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        phone: user.phone,
+        gender: user.gender,
+        birthday: user.birthday,
+      },
     });
   } catch (error) {
     console.error("Kayıt hatası:", error);

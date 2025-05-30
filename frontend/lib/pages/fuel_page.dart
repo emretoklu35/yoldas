@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
+import 'create_order_page.dart';
 
 class FuelPage extends StatefulWidget {
   const FuelPage({super.key});
@@ -104,27 +105,31 @@ class _FuelPageState extends State<FuelPage> {
           SummaryRow(label: "Toplam", value: total, bold: true),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: (fuelCost >= 500)
-                ? () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CheckoutPage(
-                          fuelCost: fuelCost,
-                          serviceFee: serviceFee,
-                          serviceType: 'fuel',
-                        ),
-                      ),
-                    );
-                  }
-                : null,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateOrderPage(
+                    serviceType: 'fuel',
+                    totalAmount: total,
+                  ),
+                ),
+              );
+
+              if (result == true) {
+                // Sipariş başarıyla oluşturuldu
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Siparişiniz oluşturuldu')),
+                );
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               disabledBackgroundColor: Colors.grey,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
-            child: const Text("Devam Et", style: TextStyle(fontSize: 18)),
+            child: const Text("Sipariş Ver", style: TextStyle(fontSize: 18)),
           )
         ],
       ),

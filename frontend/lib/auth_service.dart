@@ -31,7 +31,7 @@ Future<bool> login(String email, String password) async {
   }
 }
 
-Future<bool> signup(String email, String password) async {
+Future<bool> signup(String email, String password, {String? name, String? phone, String? gender, String? birthday}) async {
   final url = Uri.parse("$baseUrl/auth/register");
 
   final response = await http.post(
@@ -41,14 +41,18 @@ Future<bool> signup(String email, String password) async {
       'email': email,
       'password': password,
       'role': 'user',
+      if (name != null) 'name': name,
+      if (phone != null) 'phone': phone,
+      if (gender != null) 'gender': gender,
+      if (birthday != null) 'birthday': birthday,
     }),
   );
 
   if (response.statusCode == 201) {
-    print("Kayıt başarılı: ${response.body}");
+    print("Kayıt başarılı: "+response.body);
     return true;
   } else {
-    print("Kayıt başarısız! Kodu: ${response.statusCode}, Mesaj: ${response.body}");
+    print("Kayıt başarısız! Kodu: "+response.statusCode.toString()+", Mesaj: "+response.body);
     return false;
   }
 }

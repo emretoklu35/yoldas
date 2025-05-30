@@ -15,12 +15,14 @@ const profileRoutes = require("./routes/profile.routes");
 const adminRoutes = require("./routes/admin.routes"); // ✅ EKLENDİ
 const forgotPasswordRoute = require("./routes/forgotPassword.routes");
 const resetPasswordRoutes = require("./routes/resetPassword.routes");
+const orderRoutes = require("./routes/order.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/admin", adminRoutes); // ✅ Admin rotası eklendi
 app.use("/api", forgotPasswordRoute);
 app.use("/api", resetPasswordRoutes);
+app.use("/api/orders", orderRoutes);
 
 // Root route
 app.get("/", (req, res) => {

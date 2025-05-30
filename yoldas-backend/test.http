@@ -56,3 +56,18 @@ Content-Type: application/json
 ### 🔐 6️⃣ ADMIN DASHBOARD (sadece admin erişebilir)
 GET {{baseUrl}}/admin/dashboard
 Authorization: Bearer {{adminToken}}
+
+### 🔐 7️⃣ Siparişleri Getir
+GET {{baseUrl}}/orders
+Authorization: Bearer {{authToken}}
+
+### ✅ 8️⃣ Yeni Sipariş Oluştur
+POST {{baseUrl}}/orders
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "serviceType": "fuel",
+  "address": "Test Adres",
+  "totalAmount": 150.50
+}

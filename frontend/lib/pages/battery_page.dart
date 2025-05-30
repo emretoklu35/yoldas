@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
+import 'create_order_page.dart';
 
 class BatteryPage extends StatefulWidget {
   const BatteryPage({super.key});
@@ -161,20 +162,22 @@ class _BatteryPageState extends State<BatteryPage> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: batteryCost + serviceFee > 0
-                ? () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => CheckoutPage(
-                          fuelCost: total,
-                          serviceFee: 0,
-                          serviceType: 'battery',
-                        ),
-                      ),
-                    );
-                  }
-                : null,
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CreateOrderPage(
+                    serviceType: 'battery',
+                    totalAmount: total,
+                  ),
+                ),
+              );
+              if (result == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Siparişiniz oluşturuldu')),
+                );
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               disabledBackgroundColor: Colors.grey,
@@ -182,7 +185,7 @@ class _BatteryPageState extends State<BatteryPage> {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: const Text(
-              "Devam Et",
+              "Sipariş Ver",
               style: TextStyle(fontSize: 18),
             ),
           ),

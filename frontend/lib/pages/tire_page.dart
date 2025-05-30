@@ -1,6 +1,7 @@
 // File: lib/pages/tire_page.dart
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
+import 'create_order_page.dart';
 
 class TirePage extends StatefulWidget {
   const TirePage({super.key});
@@ -291,28 +292,21 @@ class _TirePageState extends State<TirePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Map<String, dynamic> selectedProductsDetails = {};
-                          _selectedTires.forEach((id, quantity) {
-                            final tire = tireProducts.firstWhere((t) => t['id'] == id);
-                            selectedProductsDetails[tire['name']] = {
-                              'quantity': quantity,
-                              'price': tire['price'],
-                              'image': tire['imageAsset'],
-                            };
-                          });
-
-                          Navigator.push(
+                        onPressed: () async {
+                          final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => CheckoutPage(
-                                fuelCost: _calculateTotal,
-                                serviceFee: 0,
+                              builder: (context) => CreateOrderPage(
                                 serviceType: 'tire',
-                                selectedItems: selectedProductsDetails,
+                                totalAmount: _calculateTotal,
                               ),
                             ),
                           );
+                          if (result == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Siparişiniz oluşturuldu')),
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black,
@@ -322,7 +316,7 @@ class _TirePageState extends State<TirePage> {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: const Text(
-                          'Devam Et',
+                          'Sipariş Ver',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
