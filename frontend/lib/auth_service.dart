@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 final storage = FlutterSecureStorage();
 
 // Base URL'i sabit olarak tanımlayalım
-const String baseUrl = "http://192.168.1.8:8080/api";
+const String baseUrl = "http://172.20.10.2:8080/api";
 
 Future<bool> login(String email, String password) async {
   final url = Uri.parse("$baseUrl/auth/login");
