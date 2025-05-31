@@ -21,16 +21,16 @@ class _LoginPageState extends State<LoginPage> {
     String email = _usernameController.text.trim();
     String password = _passwordController.text.trim();
 
-    bool success = await login(email, password); // auth_service.dart
+    final result = await login(email, password);
 
-    if (success) {
+    if (result['success']) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } else {
       setState(() {
-        errorText = 'E-posta veya şifre hatalı';
+        errorText = result['message'];
       });
     }
   }
