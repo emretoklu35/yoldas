@@ -18,7 +18,7 @@ const resetPasswordRoutes = require("./routes/resetPassword.routes");
 const orderRoutes = require("./routes/order.routes");
 
 // ✅ Yeni eklediğimiz route:
-const gasStationRoutes = require("./routes/gasStations.routes");
+const gasStationRoutes = require("./routes/gasStations");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
