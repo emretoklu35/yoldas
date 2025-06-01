@@ -8,6 +8,9 @@ class Order {
   final String serviceType;
   final String status;
   final String address;
+  final String deliveryTime;
+  final String cardNumber;
+  final String cardHolder;
   final double totalAmount;
   final DateTime createdAt;
 
@@ -16,6 +19,9 @@ class Order {
     required this.serviceType,
     required this.status,
     required this.address,
+    required this.deliveryTime,
+    required this.cardNumber,
+    required this.cardHolder,
     required this.totalAmount,
     required this.createdAt,
   });
@@ -26,7 +32,10 @@ class Order {
       serviceType: json['serviceType'],
       status: json['status'],
       address: json['address'],
-      totalAmount: json['totalAmount'].toDouble(),
+      deliveryTime: json['deliveryTime'] ?? '',
+      cardNumber: json['cardNumber'] ?? '',
+      cardHolder: json['cardHolder'] ?? '',
+      totalAmount: (json['totalAmount'] ?? 0).toDouble(),
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

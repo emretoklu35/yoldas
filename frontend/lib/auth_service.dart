@@ -6,7 +6,7 @@ import 'dart:async';
 final storage = FlutterSecureStorage();
 
 // Base URL'i sabit olarak tanımlayalım
-const String baseUrl = "http://192.168.1.8:8080/api";
+const String baseUrl = "http://shuttle.proxy.rlwy.net:27363/api";
 
 Future<Map<String, dynamic>> login(String email, String password) async {
   try {
