@@ -10,7 +10,7 @@ import 'pages/profile_page.dart';
 import 'pages/charging_page.dart';
 import 'pages/tire_page.dart';
 import 'pages/reset_password_page.dart';
-import 'package:uni_links/uni_links.dart';
+import 'package:app_links/app_links.dart';
 import 'dart:async';
 
 void main() {
@@ -26,26 +26,44 @@ class YoldasApp extends StatefulWidget {
 }
 
 class _YoldasAppState extends State<YoldasApp> {
-  StreamSubscription? _sub;
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
     super.initState();
-    _sub = uriLinkStream.listen((Uri? uri) {
-      if (uri != null && uri.path == '/reset-password' && uri.queryParameters['token'] != null) {
-        final token = uri.queryParameters['token']!;
-        Navigator.of(navigatorKey.currentContext!).push(
-          MaterialPageRoute(
-            builder: (_) => ResetPasswordPage(token: token),
-          ),
-        );
-      }
+    _initDeepLinks();
+  }
+
+  Future<void> _initDeepLinks() async {
+    _appLinks = AppLinks();
+
+    // Handle initial URI if app was opened from a link
+    final uri = await _appLinks.getInitialAppLink();
+    if (uri != null) {
+      _handleDeepLink(uri);
+    }
+
+    // Listen for incoming links while app is running
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _handleDeepLink(uri);
     });
+  }
+
+  void _handleDeepLink(Uri uri) {
+    if (uri.path == '/reset-password' && uri.queryParameters['token'] != null) {
+      final token = uri.queryParameters['token']!;
+      Navigator.of(navigatorKey.currentContext!).push(
+        MaterialPageRoute(
+          builder: (_) => ResetPasswordPage(token: token),
+        ),
+      );
+    }
   }
 
   @override
   void dispose() {
-    _sub?.cancel();
+    _linkSubscription?.cancel();
     super.dispose();
   }
 

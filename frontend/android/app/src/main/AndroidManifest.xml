@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.yoldas.app">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Konum izinleri -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -12,26 +11,32 @@
 
     <application
         android:label="Yoldaş"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
 
         <!-- Google Maps API Anahtarı -->
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyBH3Sy33T9ULXGTwcq9tMNL7OrhL3auSbI" />
 
-        <!-- Diğer aktiviteler ve yapılandırmalar -->
         <activity
             android:name=".MainActivity"
-            android:label="Yoldaş"
+            android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize"
-            android:launchMode="singleTask"
-            android:hardwareAccelerated="true">
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
     </application>
 </manifest>
