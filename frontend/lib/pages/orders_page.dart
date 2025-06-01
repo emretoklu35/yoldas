@@ -26,6 +26,7 @@ class _OrdersPageState extends State<OrdersPage> {
         _orders = orders;
         _isLoading = false;
       });
+      print('Orders list size after setState: ${_orders.length}');
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -95,6 +96,7 @@ class _OrdersPageState extends State<OrdersPage> {
                         itemCount: _orders.length,
                         itemBuilder: (context, index) {
                           final order = _orders[index];
+                          print('Building card for order ID: ${order.id}');
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
                             child: Padding(
