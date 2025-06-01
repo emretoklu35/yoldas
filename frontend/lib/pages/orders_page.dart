@@ -96,7 +96,6 @@ class _OrdersPageState extends State<OrdersPage> {
                         itemCount: _orders.length,
                         itemBuilder: (context, index) {
                           final order = _orders[index];
-                          print('Building card for order ID: ${order.id}');
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
                             child: Padding(
