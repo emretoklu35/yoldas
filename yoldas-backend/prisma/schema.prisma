@@ -37,3 +37,16 @@ model User {
   resetTokenExpiry DateTime? 
 }
 
+model GasStation {
+  id        Int      @id @default(autoincrement())
+  placeId   String   @unique @map("place_id")
+  name      String
+  latitude  Float
+  longitude Float
+  address   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("gas_stations")
+}
+

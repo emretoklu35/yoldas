@@ -16,6 +16,7 @@ const adminRoutes = require("./routes/admin.routes");
 const forgotPasswordRoute = require("./routes/forgotPassword.routes");
 const resetPasswordRoutes = require("./routes/resetPassword.routes");
 const orderRoutes = require("./routes/order.routes");
+const gasStationRoutes = require("./routes/gasStationRoutes");
 
 // ✅ Yeni eklediğimiz route:
 
@@ -26,6 +27,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api", forgotPasswordRoute);
 app.use("/api", resetPasswordRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/gas-stations", gasStationRoutes);
 
 // ✅ Yeni route'u tanımladık:
 

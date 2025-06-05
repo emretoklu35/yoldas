@@ -71,3 +71,15 @@ Content-Type: application/json
   "address": "Test Adres",
   "totalAmount": 150.50
 }
+
+### Test Gas Station Endpoint
+POST {{baseUrl}}/gas-stations/add
+Content-Type: application/json
+
+{
+    "placeId": "test_place_id",
+    "name": "Test Gas Station",
+    "latitude": 41.0082,
+    "longitude": 28.9784,
+    "address": "Test Address"
+}
