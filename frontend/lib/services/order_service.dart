@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../auth_service.dart';
+import '../config/app_config.dart';
+import 'auth_service.dart';
 
 class Order {
   final int id;
@@ -13,6 +14,8 @@ class Order {
   final String cardHolder;
   final double totalAmount;
   final DateTime createdAt;
+  final int? gasStationId;
+  final Map<String, dynamic>? gasStation;
 
   Order({
     required this.id,
@@ -24,6 +27,8 @@ class Order {
     required this.cardHolder,
     required this.totalAmount,
     required this.createdAt,
+    this.gasStationId,
+    this.gasStation,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -37,6 +42,8 @@ class Order {
       cardHolder: json['cardHolder'] ?? '',
       totalAmount: (json['totalAmount'] ?? 0).toDouble(),
       createdAt: DateTime.parse(json['createdAt']),
+      gasStationId: json['gasStationId'],
+      gasStation: json['gasStation'],
     );
   }
 }
@@ -46,14 +53,14 @@ Future<List<Order>> getUserOrders() async {
     final storage = FlutterSecureStorage();
     final token = await storage.read(key: 'jwt');
     
-    print('Token: $token'); // Token'ı kontrol et
+    print('Token: $token');
     
     if (token == null) {
       throw Exception('Oturum açmanız gerekiyor');
     }
 
-    final url = Uri.parse('$baseUrl/orders');
-    print('İstek URL: $url'); // URL'i kontrol et
+    final url = Uri.parse('${AppConfig.baseUrl}/orders');
+    print('İstek URL: $url');
 
     final response = await http.get(
       url,
@@ -63,8 +70,8 @@ Future<List<Order>> getUserOrders() async {
       },
     );
 
-    print('Response Status: ${response.statusCode}'); // Status code'u kontrol et
-    print('Response Body: ${response.body}'); // Response body'yi kontrol et
+    print('Response Status: ${response.statusCode}');
+    print('Response Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final List<dynamic> ordersJson = json.decode(response.body);
@@ -73,7 +80,7 @@ Future<List<Order>> getUserOrders() async {
       throw Exception('Siparişler getirilemedi: ${response.body}');
     }
   } catch (e) {
-    print('Hata: $e'); // Hatayı logla
+    print('Hata: $e');
     throw Exception('Siparişler getirilirken bir hata oluştu: $e');
   }
 }
@@ -85,6 +92,7 @@ Future<Order> createOrder({
   required String deliveryTime,
   required String cardNumber,
   required String cardHolder,
+  int? gasStationId,
 }) async {
   try {
     final storage = FlutterSecureStorage();
@@ -96,7 +104,7 @@ Future<Order> createOrder({
       throw Exception('Oturum açmanız gerekiyor');
     }
 
-    final url = Uri.parse('$baseUrl/orders');
+    final url = Uri.parse('${AppConfig.baseUrl}/orders');
     print('İstek URL: $url');
 
     final response = await http.post(
@@ -112,6 +120,7 @@ Future<Order> createOrder({
         'deliveryTime': deliveryTime,
         'cardNumber': cardNumber,
         'cardHolder': cardHolder,
+        'gasStationId': gasStationId,
       }),
     );
 
@@ -126,5 +135,64 @@ Future<Order> createOrder({
   } catch (e) {
     print('Hata: $e');
     throw Exception('Sipariş oluşturulurken bir hata oluştu: $e');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getOrders() async {
+  final token = await getToken();
+  if (token == null) throw Exception('Oturum açmanız gerekiyor');
+
+  final response = await http.get(
+    Uri.parse('${AppConfig.baseUrl}/orders'),
+    headers: {
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(jsonDecode(response.body)['message'] ?? 'Siparişler getirilemedi');
+  }
+
+  final List<dynamic> data = jsonDecode(response.body);
+  return data.cast<Map<String, dynamic>>();
+}
+
+Future<void> updateOrderStatus(String orderId, String status) async {
+  final token = await getToken();
+  if (token == null) throw Exception('Oturum açmanız gerekiyor');
+
+  final response = await http.patch(
+    Uri.parse('${AppConfig.baseUrl}/orders/$orderId/status'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'status': status,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(jsonDecode(response.body)['message'] ?? 'Sipariş durumu güncellenemedi');
+  }
+}
+
+Future<void> updateServices(Map<String, bool> services) async {
+  final token = await getToken();
+  if (token == null) throw Exception('Oturum açmanız gerekiyor');
+
+  final response = await http.patch(
+    Uri.parse('${AppConfig.baseUrl}/profile/services'),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'services': services,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception(jsonDecode(response.body)['message'] ?? 'Hizmetler güncellenemedi');
   }
 } 

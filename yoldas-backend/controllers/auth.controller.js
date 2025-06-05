@@ -69,7 +69,19 @@ exports.login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ message: "Login successful", token });
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.name,
+        phone: user.phone,
+        gender: user.gender,
+        birthday: user.birthday,
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Login failed." });

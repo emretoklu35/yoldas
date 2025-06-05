@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const profileController = require("../controllers/profile.controller");
 const verifyToken = require("../middlewares/auth.middleware");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -24,5 +25,11 @@ router.get("/", verifyToken, async (req, res) => {
     res.status(500).json({ error: "Profil getirilemedi." });
   }
 });
+
+// Profil bilgilerini güncelle
+router.patch("/", verifyToken, profileController.updateProfile);
+
+// Hizmetleri güncelle
+router.patch("/services", verifyToken, profileController.updateServices);
 
 module.exports = router;

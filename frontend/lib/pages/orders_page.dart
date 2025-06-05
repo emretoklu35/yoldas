@@ -69,6 +69,8 @@ class _OrdersPageState extends State<OrdersPage> {
         return 'Akü';
       case 'tire':
         return 'Lastik';
+      case 'charging':
+        return 'Şarj';
       default:
         return type;
     }
@@ -137,6 +139,13 @@ class _OrdersPageState extends State<OrdersPage> {
                                     'Adres: ${order.address}',
                                     style: const TextStyle(color: Colors.grey),
                                   ),
+                                  if (order.gasStation != null) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'İstasyon: ${order.gasStation!['name']}',
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
                                   const SizedBox(height: 8),
                                   Text(
                                     'Tutar: ₺${order.totalAmount.toStringAsFixed(2)}',

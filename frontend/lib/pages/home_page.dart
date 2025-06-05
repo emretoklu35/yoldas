@@ -4,12 +4,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart'; // Google Haritalar'ı açmak için eklendi
-
-// Sayfa ve Servis importları
 import '../services/location_service.dart';
 import '../widgets/vehicle_selector.dart'; // Vehicle and VehicleSelector
+import '../services/gas_station_service.dart';
+import '../config/app_config.dart';
 
-const String googlePlacesApiKey = 'AIzaSyDpLfuUBn758P7VJ3SrWyLIUdWysj0-am4'; // API Anahtarınızı buraya girin veya güvenli bir şekilde yönetin
+// Google Places API Key'i config'den al
+const String googlePlacesApiKey = AppConfig.googlePlacesApiKey;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -102,13 +103,97 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _handleMarkerTap(Marker marker) async {
+    if (marker.markerId.value == 'currentLocation') return;
+
+    try {
+      print('Marker tıklandı: ${marker.markerId.value}');
+      
+      // Google Places API'den detaylı bilgi al
+      final detailsUrl = 'https://maps.googleapis.com/maps/api/place/details/json?place_id=${marker.markerId.value}&fields=name,formatted_address&key=$googlePlacesApiKey';
+      print('API isteği yapılıyor: $detailsUrl');
+      
+      final response = await http.get(Uri.parse(detailsUrl));
+      print('API yanıtı: ${response.statusCode} - ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK' && data['result'] != null) {
+          final placeDetails = data['result'];
+          print('Yer detayları: $placeDetails');
+          
+          // Benzin istasyonunu veritabanına ekle
+          try {
+            final result = await addGasStation(
+              placeId: marker.markerId.value,
+              name: placeDetails['name'] ?? 'İsimsiz İstasyon',
+              latitude: marker.position.latitude,
+              longitude: marker.position.longitude,
+              address: placeDetails['formatted_address'] ?? '',
+            );
+            print('İstasyon ekleme sonucu: $result');
+
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Benzin istasyonu başarıyla kaydedildi'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          } catch (e) {
+            print('İstasyon ekleme hatası: $e');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('İstasyon eklenirken hata oluştu: ${e.toString()}'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } else {
+          print('API yanıtında hata: ${data['status']}');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Yer bilgileri alınamadı: ${data['status']}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
+        print('API isteği başarısız: ${response.statusCode}');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Yer bilgileri alınamadı: ${response.statusCode}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      print('Genel hata: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Bir hata oluştu: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _loadNearbyPlaces() async {
     if (_position == null) return;
     final url =
         'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${_position!.latitude},${_position!.longitude}&radius=1500&type=gas_station&key=$googlePlacesApiKey';
     try {
       final response = await http.get(Uri.parse(url));
-      if (mounted) { // Asenkron işlem sonrası widget kontrolü
+      if (mounted) {
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           Set<Marker> newMarkers = {
@@ -127,7 +212,11 @@ class _HomePageState extends State<HomePage> {
                   markerId: MarkerId(place['place_id']),
                   position: LatLng(loc['lat'], loc['lng']),
                   infoWindow: InfoWindow(title: place['name']),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed), // Benzin istasyonları için
+                  icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+                  onTap: () => _handleMarkerTap(Marker(
+                    markerId: MarkerId(place['place_id']),
+                    position: LatLng(loc['lat'], loc['lng']),
+                  )),
                 ),
               );
             }
@@ -135,17 +224,10 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             _markers = newMarkers;
           });
-        } else {
-          print('Google Places API Error: ${response.statusCode} - ${response.body}');
-          // Kullanıcıya bir hata mesajı gösterilebilir
-          // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Yakındaki yerler yüklenemedi.')));
         }
       }
     } catch (e) {
-      if (mounted) {
-        print('Error loading nearby places: $e');
-        // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Bir hata oluştu.')));
-      }
+      print('Error loading nearby places: $e');
     }
   }
 

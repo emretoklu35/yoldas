@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
+import 'create_order_page.dart';
+import '../services/gas_station_service.dart';
 
 class ChargingPage extends StatefulWidget {
   const ChargingPage({super.key});
@@ -13,6 +15,10 @@ class _ChargingPageState extends State<ChargingPage> {
   double chargingCost = 0;
   double serviceFee = 50; // Default service fee for charging
   double total = 0;
+  int? _selectedGasStationId;
+  List<Map<String, dynamic>> _nearbyStations = [];
+  bool _isLoadingStations = false;
+  String _stationError = '';
 
   final List<Map<String, dynamic>> chargingOptions = [
     {
@@ -61,6 +67,27 @@ class _ChargingPageState extends State<ChargingPage> {
     super.initState();
     selectedChargingOption = chargingOptions.first['name']; // Default selection
     _calculateTotal();
+    _loadNearbyStations();
+  }
+
+  Future<void> _loadNearbyStations() async {
+    setState(() {
+      _isLoadingStations = true;
+      _stationError = '';
+    });
+
+    try {
+      final stations = await getNearbyGasStations();
+      setState(() {
+        _nearbyStations = stations;
+        _isLoadingStations = false;
+      });
+    } catch (e) {
+      setState(() {
+        _stationError = 'Yakındaki istasyonlar yüklenirken hata oluştu: $e';
+        _isLoadingStations = false;
+      });
+    }
   }
 
   @override
@@ -95,6 +122,51 @@ class _ChargingPageState extends State<ChargingPage> {
                 },
                 imageAsset: option['imageAsset'] as String?, // Görsel yolunu iletiyoruz
               )).toList(),
+          const SizedBox(height: 24),
+          const Text(
+            "Şarj İstasyonu Seçimi",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          if (_isLoadingStations)
+            const Center(child: CircularProgressIndicator())
+          else if (_stationError.isNotEmpty)
+            Center(
+              child: Text(
+                _stationError,
+                style: const TextStyle(color: Colors.red),
+              ),
+            )
+          else if (_nearbyStations.isEmpty)
+            const Center(
+              child: Text(
+                'Yakınızda istasyon bulunamadı. Lütfen haritadan istasyon seçin.',
+                style: TextStyle(color: Colors.orange),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<int>(
+                  value: _selectedGasStationId,
+                  isExpanded: true,
+                  hint: const Text('İstasyon Seçin'),
+                  items: _nearbyStations.map((station) {
+                    return DropdownMenuItem<int>(
+                      value: station['id'] as int,
+                      child: Text(station['name'] as String),
+                    );
+                  }).toList(),
+                  onChanged: (val) => setState(() => _selectedGasStationId = val),
+                ),
+              ),
+            ),
           const SizedBox(height: 24),
           const Text(
             "Hizmet Detayları",
@@ -148,15 +220,15 @@ class _ChargingPageState extends State<ChargingPage> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: total > 0
+            onPressed: (total > 0 && _selectedGasStationId != null)
                 ? () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => CheckoutPage(
-                          fuelCost: total, // Pass total here
-                          serviceFee: 0, // Service fee is already included in total
+                        builder: (_) => CreateOrderPage(
                           serviceType: 'charging',
+                          totalAmount: total,
+                          gasStationId: _selectedGasStationId,
                         ),
                       ),
                     );

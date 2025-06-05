@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/order_service.dart';
+import '../services/gas_station_service.dart';
 
 class CardNumberInputFormatter extends TextInputFormatter {
   @override
@@ -53,11 +54,13 @@ class ExpiryDateInputFormatter extends TextInputFormatter {
 class CreateOrderPage extends StatefulWidget {
   final String serviceType;
   final double totalAmount;
+  final int? gasStationId;
 
   const CreateOrderPage({
     super.key,
     required this.serviceType,
     required this.totalAmount,
+    this.gasStationId,
   });
 
   @override
@@ -71,6 +74,9 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
   final _cardHolderController = TextEditingController();
+  int? _selectedGasStationId;
+  List<Map<String, dynamic>> _nearbyStations = [];
+  bool _isLoadingStations = false;
 
   bool _isLoading = false;
   String _error = '';
@@ -83,6 +89,31 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
     '17:00 - 19:00',
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadNearbyStations();
+  }
+
+  Future<void> _loadNearbyStations() async {
+    setState(() {
+      _isLoadingStations = true;
+    });
+
+    try {
+      final stations = await getNearbyGasStations();
+      setState(() {
+        _nearbyStations = stations;
+        _isLoadingStations = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Yakındaki istasyonlar yüklenirken hata oluştu: $e';
+        _isLoadingStations = false;
+      });
+    }
+  }
+
   Future<void> _createOrder() async {
     String cardNumberRaw = _cardNumberController.text.replaceAll(' ', '');
     String expiryRaw = _expiryController.text.replaceAll('/', '');
@@ -93,6 +124,11 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         _cvvController.text.length != 3 ||
         _cardHolderController.text.isEmpty) {
       setState(() => _error = 'Lütfen tüm alanları eksiksiz doldurun.');
+      return;
+    }
+
+    if ((widget.serviceType == 'fuel' || widget.serviceType == 'charging') && widget.gasStationId == null) {
+      setState(() => _error = 'Lütfen bir istasyon seçin.');
       return;
     }
 
@@ -109,6 +145,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
         deliveryTime: _selectedTime!,
         cardNumber: cardNumberRaw.substring(12), // Son 4 hane
         cardHolder: _cardHolderController.text,
+        gasStationId: widget.gasStationId,
       );
 
       if (!mounted) return;
@@ -149,7 +186,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hizmet: ${widget.serviceType == "fuel" ? "Yakıt" : widget.serviceType == "battery" ? "Akü" : widget.serviceType == "tire" ? "Lastik" : widget.serviceType}',
+                'Hizmet: ${widget.serviceType == "fuel" ? "Yakıt" : widget.serviceType == "battery" ? "Akü" : widget.serviceType == "tire" ? "Lastik" : widget.serviceType == "charging" ? "Şarj" : widget.serviceType}',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -173,12 +210,12 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 value: _selectedTime,
-                items: _timeSlots
-                    .map((slot) => DropdownMenuItem(
-                          value: slot,
-                          child: Text(slot),
-                        ))
-                    .toList(),
+                items: _timeSlots.map((time) {
+                  return DropdownMenuItem<String>(
+                    value: time,
+                    child: Text(time),
+                  );
+                }).toList(),
                 onChanged: (val) => setState(() => _selectedTime = val),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),

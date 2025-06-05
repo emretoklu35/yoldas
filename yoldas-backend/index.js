@@ -5,8 +5,20 @@ const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  next();
+});
+
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
 // Routes
@@ -16,7 +28,7 @@ const adminRoutes = require("./routes/admin.routes");
 const forgotPasswordRoute = require("./routes/forgotPassword.routes");
 const resetPasswordRoutes = require("./routes/resetPassword.routes");
 const orderRoutes = require("./routes/order.routes");
-const gasStationRoutes = require("./routes/gasStationRoutes");
+const gasStationRoutes = require("./routes/gas_station.routes");
 
 // ✅ Yeni eklediğimiz route:
 

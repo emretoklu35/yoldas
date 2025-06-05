@@ -4,22 +4,40 @@ const prisma = new PrismaClient();
 // Kullanıcının siparişlerini getir
 exports.getUserOrders = async (req, res) => {
   try {
-    console.log('Kullanıcı ID:', req.user.id); // Kullanıcı ID'sini logla
-    
     const userId = req.user.id;
-    const orders = await prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
     });
-    
-    console.log('Bulunan siparişler:', orders); // Siparişleri logla
+
+    let orders;
+    if (user.role === 'serviceprovider') {
+      // Servis sağlayıcı için tüm siparişleri getir
+      orders = await prisma.order.findMany({
+        include: {
+          gasStation: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    } else {
+      // Normal kullanıcı için kendi siparişlerini getir
+      orders = await prisma.order.findMany({
+        where: { userId },
+        include: {
+          gasStation: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    }
+
     res.json(orders);
   } catch (error) {
     console.error("Siparişler getirilirken hata:", error);
-    res.status(500).json({ 
-      error: "Siparişler getirilemedi.",
-      details: error.message 
-    });
+    res.status(500).json({ message: "Siparişler getirilemedi" });
   }
 };
 
@@ -27,30 +45,67 @@ exports.getUserOrders = async (req, res) => {
 exports.createOrder = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { serviceType, address, totalAmount, deliveryTime, cardNumber, cardHolder } = req.body;
-
-    console.log('Yeni sipariş isteği:', { userId, serviceType, address, totalAmount, deliveryTime, cardNumber, cardHolder });
+    const {
+      serviceType,
+      address,
+      totalAmount,
+      deliveryTime,
+      cardNumber,
+      cardHolder,
+      gasStationId,
+    } = req.body;
 
     const order = await prisma.order.create({
       data: {
-        userId,
         serviceType,
-        status: "pending",
         address,
+        totalAmount,
         deliveryTime,
         cardNumber,
         cardHolder,
-        totalAmount
-      }
+        userId,
+        gasStationId,
+      },
+      include: {
+        gasStation: true,
+      },
     });
 
-    console.log('Oluşturulan sipariş:', order);
     res.status(201).json(order);
   } catch (error) {
     console.error("Sipariş oluşturulurken hata:", error);
-    res.status(500).json({ 
-      error: "Sipariş oluşturulamadı.",
-      details: error.message 
+    res.status(500).json({ message: "Sipariş oluşturulamadı" });
+  }
+};
+
+// Sipariş durumunu güncelle
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const userId = req.user.id;
+
+    // Kullanıcının rolünü kontrol et
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { role: true },
     });
+
+    if (user.role !== 'serviceprovider') {
+      return res.status(403).json({ message: "Bu işlem için yetkiniz yok" });
+    }
+
+    const order = await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { status },
+      include: {
+        gasStation: true,
+      },
+    });
+
+    res.json(order);
+  } catch (error) {
+    console.error("Sipariş durumu güncellenirken hata:", error);
+    res.status(500).json({ message: "Sipariş durumu güncellenemedi" });
   }
 }; 

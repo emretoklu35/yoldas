@@ -1,0 +1,9 @@
+[build]
+builder = "nixpacks"
+buildCommand = "cd yoldas-backend && npm install"
+
+[deploy]
+startCommand = "cd yoldas-backend && npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 100
+restartPolicyType = "on-failure" 

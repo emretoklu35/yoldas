@@ -18,8 +18,10 @@ model Order {
   cardNumber  String?  // Son 4 hane
   cardHolder  String?  // Kart sahibi adı
   totalAmount Float
+  gasStationId Int?    // Seçilen istasyon ID'si
+  gasStation  GasStation? @relation(fields: [gasStationId], references: [id])
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime @default(now()) @updatedAt
 }
 
 model User {
@@ -32,6 +34,9 @@ model User {
   gender    String?
   birthday  DateTime?
   orders    Order[]  // Kullanıcının siparişleri
+  services  Json?    // Hizmet sağlayıcı için hizmet bilgileri
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   resetToken       String?   
   resetTokenExpiry DateTime? 
@@ -44,8 +49,9 @@ model GasStation {
   latitude  Float
   longitude Float
   address   String?
+  orders    Order[]  // İstasyonun siparişleri
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
 
   @@map("gas_stations")
 }
