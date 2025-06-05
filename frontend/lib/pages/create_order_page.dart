@@ -5,12 +5,20 @@ import '../services/order_service.dart';
 class CardNumberInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+    
     String digits = newValue.text.replaceAll(RegExp(r'\D'), '');
     String formatted = '';
+    
     for (int i = 0; i < digits.length; i++) {
-      if (i != 0 && i % 4 == 0) formatted += ' ';
+      if (i > 0 && i % 4 == 0) {
+        formatted += ' ';
+      }
       formatted += digits[i];
     }
+    
     return TextEditingValue(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
@@ -21,12 +29,20 @@ class CardNumberInputFormatter extends TextInputFormatter {
 class ExpiryDateInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+    
     String digits = newValue.text.replaceAll(RegExp(r'\D'), '');
     String formatted = '';
+    
     for (int i = 0; i < digits.length && i < 4; i++) {
-      if (i == 2) formatted += '/';
+      if (i == 2) {
+        formatted += '/';
+      }
       formatted += digits[i];
     }
+    
     return TextEditingValue(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
@@ -115,7 +131,13 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sipariş Oluştur'),
+        title: Text(
+          widget.serviceType == "fuel" ? "Yakıt Siparişi Ödeme" :
+          widget.serviceType == "battery" ? "Akü Siparişi Ödeme" :
+          widget.serviceType == "tire" ? "Lastik Siparişi Ödeme" :
+          widget.serviceType == "charging" ? "Şarj Siparişi Ödeme" :
+          "Sipariş Ödeme",
+        ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,

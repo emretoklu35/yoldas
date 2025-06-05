@@ -10,28 +10,28 @@ const String baseUrl = "https://yoldas-production.up.railway.app/api";
 
 Future<Map<String, dynamic>> login(String email, String password) async {
   try {
-    final url = Uri.parse("$baseUrl/auth/login");
+  final url = Uri.parse("$baseUrl/auth/login");
     print("Login isteği gönderiliyor: $url");
     print("Email: $email");
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'email': email,
+      'password': password,
+    }),
     ).timeout(
       const Duration(seconds: 10),
       onTimeout: () {
         throw TimeoutException('Sunucu yanıt vermedi. Lütfen internet bağlantınızı kontrol edin.');
       },
-    );
+  );
 
     print("Sunucu yanıt kodu: ${response.statusCode}");
     print("Sunucu yanıtı: ${response.body}");
 
-    if (response.statusCode == 200) {
+  if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       final token = responseData['token'];
       
@@ -43,7 +43,7 @@ Future<Map<String, dynamic>> login(String email, String password) async {
         };
       }
 
-      await storage.write(key: 'jwt', value: token);
+    await storage.write(key: 'jwt', value: token);
       print("Token başarıyla kaydedildi");
       
       return {
@@ -51,7 +51,7 @@ Future<Map<String, dynamic>> login(String email, String password) async {
         'message': 'Giriş başarılı',
         'token': token
       };
-    } else {
+  } else {
       String errorMessage;
       try {
         final responseData = jsonDecode(response.body);

@@ -361,10 +361,10 @@ class _HomePageState extends State<HomePage> {
                   crossAxisSpacing: 12, // Yatay boşluk
                   childAspectRatio: 1.05, // Butonların en/boy oranı
                   children: [
-                    _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt', onTap: _onFuelTap),
-                    _HomeIconButton(icon: Icons.ev_station, label: 'Şarj', onTap: _onChargingTap),
-                    _HomeIconButton(icon: Icons.battery_charging_full, label: 'Batarya', onTap: _onBatteryTap),
-                    _HomeIconButton(icon: Icons.tire_repair_rounded, label: 'Lastikler', onTap: _onTireTap),
+                    _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt Siparişi', onTap: _onFuelTap),
+                    _HomeIconButton(icon: Icons.ev_station, label: 'Şarj Siparişi', onTap: _onChargingTap),
+                    _HomeIconButton(icon: Icons.battery_charging_full, label: 'Akü Siparişi', onTap: _onBatteryTap),
+                    _HomeIconButton(icon: Icons.tire_repair_rounded, label: 'Lastik Siparişi', onTap: _onTireTap),
                     // Diğer butonlar buraya eklenebilir, örneğin:
                     // _HomeIconButton(icon: Icons.car_crash_outlined, label: 'Servis', onTap: () {}),
                     // _HomeIconButton(icon: Icons.document_scanner_outlined, label: 'Belgeler', onTap: () {}),

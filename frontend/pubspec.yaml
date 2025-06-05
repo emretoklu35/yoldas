@@ -21,6 +21,7 @@ dependencies:
   google_maps_webservice: ^0.0.20-nullsafety.5
   url_launcher: ^6.3.1
   app_links: ^3.4.1  # uni_links yerine app_links kullanacağız
+  supabase_flutter: ^2.9.0
 
 dev_dependencies:
   flutter_test:

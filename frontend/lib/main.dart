@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'pages/signup_page.dart';
@@ -13,7 +14,12 @@ import 'pages/reset_password_page.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://myqswbvbkagapzubnisp.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15cXN3YnZia2FnYXB6dWJuaXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NjM0MTAsImV4cCI6MjA2NDQzOTQxMH0.d-cmNQW3CqqAhp_1tjseiVWAHDTNtXxiAOLWSB_RSaw',
+  );
   runApp(const YoldasApp());
 }
 
@@ -52,13 +58,13 @@ class _YoldasAppState extends State<YoldasApp> {
 
   void _handleDeepLink(Uri uri) {
     if (uri.path == '/reset-password' && uri.queryParameters['token'] != null) {
-      final token = uri.queryParameters['token']!;
-      Navigator.of(navigatorKey.currentContext!).push(
-        MaterialPageRoute(
-          builder: (_) => ResetPasswordPage(token: token),
-        ),
-      );
-    }
+        final token = uri.queryParameters['token']!;
+        Navigator.of(navigatorKey.currentContext!).push(
+          MaterialPageRoute(
+            builder: (_) => ResetPasswordPage(token: token),
+          ),
+        );
+      }
   }
 
   @override
