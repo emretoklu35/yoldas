@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
 
     // Eğer servis sağlayıcı ise gasStationId kontrolü yap
     if (role === "serviceprovider") {
-      console.log(' ---------- >>>  In SERVICEPROVIDER', gasStationId);
+
       if (!gasStationId) {
         return res.status(400).json({ error: "Service provider must have a gasStationId." });
       }
@@ -39,17 +39,22 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const userCreateInput = {
+      email,
+      password: hashedPassword,
+      role: role,
+      name,
+      phone,
+      gender,
+      birthday: birthday ? new Date(birthday) : null,
+    }
+
+    if(role === 'serviceprovider') {
+      userCreateInput.gasStationId = gasStationId;
+    }
+
     const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role: role,
-        name,
-        phone,
-        gender,
-        birthday: birthday ? new Date(birthday) : null,
-        //gasStationId: role === 'serviceprovider' && gasStationId ? Number(gasStationId) : null,
-      },
+      data: userCreateInput,
     });
 
     console.log("Yeni kullanıcı eklendi:", user);

@@ -15,7 +15,7 @@ class _ChargingPageState extends State<ChargingPage> {
   double chargingCost = 0;
   double serviceFee = 50; // Default service fee for charging
   double total = 0;
-  int? _selectedGasStationId;
+  String? _selectedGasStationId;
   List<Map<String, dynamic>> _nearbyStations = [];
   bool _isLoadingStations = false;
   String _stationError = '';
@@ -153,13 +153,13 @@ class _ChargingPageState extends State<ChargingPage> {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
+                child: DropdownButton<String>(
                   value: _selectedGasStationId,
                   isExpanded: true,
                   hint: const Text('İstasyon Seçin'),
                   items: _nearbyStations.map((station) {
-                    return DropdownMenuItem<int>(
-                      value: station['id'] as int,
+                    return DropdownMenuItem<String>(
+                      value: station['placeId'] as String,
                       child: Text(station['name'] as String),
                     );
                   }).toList(),

@@ -54,7 +54,7 @@ class ExpiryDateInputFormatter extends TextInputFormatter {
 class CreateOrderPage extends StatefulWidget {
   final String serviceType;
   final double totalAmount;
-  final int? gasStationId;
+  final String? gasStationId;
 
   const CreateOrderPage({
     super.key,
@@ -74,7 +74,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
   final _cardHolderController = TextEditingController();
-  int? _selectedGasStationId;
+  String? _selectedGasStationId;
   List<Map<String, dynamic>> _nearbyStations = [];
   bool _isLoadingStations = false;
 

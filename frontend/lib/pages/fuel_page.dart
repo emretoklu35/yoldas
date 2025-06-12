@@ -12,7 +12,7 @@ class FuelPage extends StatefulWidget {
 
 class _FuelPageState extends State<FuelPage> {
   final TextEditingController _manualPriceController = TextEditingController();
-  int? _selectedGasStationId;
+  String? _selectedGasStationId;
   List<Map<String, dynamic>> _nearbyStations = [];
   bool _isLoadingStations = false;
   String _stationError = '';
@@ -40,6 +40,7 @@ class _FuelPageState extends State<FuelPage> {
     try {
       final stations = await getNearbyGasStations();
       setState(() {
+        print('>> stations: $stations');
         _nearbyStations = stations;
         _isLoadingStations = false;
       });
@@ -159,13 +160,13 @@ class _FuelPageState extends State<FuelPage> {
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<int>(
+                child: DropdownButton<String>(
                   value: _selectedGasStationId,
                   isExpanded: true,
                   hint: const Text('İstasyon Seçin'),
                   items: _nearbyStations.map((station) {
-                    return DropdownMenuItem<int>(
-                      value: station['id'] as int,
+                    return DropdownMenuItem<String>(
+                      value: station['placeId'] as String,
                       child: Text(station['name'] as String),
                     );
                   }).toList(),

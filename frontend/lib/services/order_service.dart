@@ -14,7 +14,7 @@ class Order {
   final String cardHolder;
   final double totalAmount;
   final DateTime createdAt;
-  final int? gasStationId;
+  final String? gasStationId;
   final Map<String, dynamic>? gasStation;
 
   Order({
@@ -92,7 +92,7 @@ Future<Order> createOrder({
   required String deliveryTime,
   required String cardNumber,
   required String cardHolder,
-  int? gasStationId,
+  String? gasStationId,
 }) async {
   try {
     final storage = FlutterSecureStorage();

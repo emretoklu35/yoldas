@@ -22,10 +22,13 @@ class _OrdersPageState extends State<OrdersPage> {
   Future<void> _loadOrders() async {
     try {
       final orders = await getUserOrders();
+      print('Orders list: $orders');
       setState(() {
         _orders = orders;
         _isLoading = false;
       });
+
+      print('Orders list: $_orders');
       print('Orders list size after setState: ${_orders.length}');
     } catch (e) {
       setState(() {

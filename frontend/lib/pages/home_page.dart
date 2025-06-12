@@ -8,6 +8,7 @@ import '../services/location_service.dart';
 import '../widgets/vehicle_selector.dart'; // Vehicle and VehicleSelector
 import '../services/gas_station_service.dart';
 import '../config/app_config.dart';
+import '../services/auth_service.dart'; // Kullanıcı araçlarını çekmek için
 
 // Google Places API Key'i config'den al
 const String googlePlacesApiKey = AppConfig.googlePlacesApiKey;
@@ -27,46 +28,47 @@ class _HomePageState extends State<HomePage> {
   Set<Marker> _markers = {};
 
   // Araç seçici için state'ler
-  late List<Vehicle> _vehicles;
-  late Vehicle _selectedVehicle;
+  List<Vehicle> _vehicles = [];
+  Vehicle? _selectedVehicle;
+  bool _isVehiclesLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeVehicles(); // Araçları initialize et
+    _loadUserVehicles();
     _getLocation();
   }
 
-  void _initializeVehicles() {
-    // Örnek araçlar (Bu verileri bir API'den veya yerel depodan alabilirsiniz)
-    _vehicles = [
-      Vehicle(
-        name: 'Honda Civic',
-        plate: '35BCD192',
-        icon: Icons.directions_car_filled, // Dolu ikon daha belirgin olabilir
-        // logoAsset: 'assets/logos/honda_logo.png', // Eğer logo varsa
-      ),
-      Vehicle(
-        name: 'Toyota Corolla',
-        plate: '34XYZ789',
-        icon: Icons.local_taxi,
-      ),
-      Vehicle(
-        name: 'Ford Focus',
-        plate: '06ABC123',
-        icon: Icons.drive_eta_rounded,
-      ),
-    ];
-    // Başlangıçta ilk aracı seçili yap
-    // Eğer _vehicles listesi boş olabilecekse, burada kontrol ekleyin
-    if (_vehicles.isNotEmpty) {
-      _selectedVehicle = _vehicles.first;
-    } else {
-      // Boş liste durumu için varsayılan bir araç veya hata yönetimi
-      _selectedVehicle = Vehicle(
-          name: "Araç Yok",
-          plate: "-",
-          icon: Icons.error_outline);
+  Future<void> _loadUserVehicles() async {
+    setState(() { _isVehiclesLoading = true; });
+    try {
+      final user = await getCurrentUser();
+      final token = await getToken();
+      if (user != null && token != null) {
+        final vehiclesData = await fetchVehicles(user['id'].toString(), token);
+        final vehicles = vehiclesData.map<Vehicle>((v) => Vehicle(
+          name: v['carName'] ?? '',
+          plate: v['plate'] ?? '',
+          icon: Icons.directions_car_filled, // İsteğe göre ikon seçilebilir
+        )).toList();
+        setState(() {
+          _vehicles = vehicles;
+          _selectedVehicle = vehicles.isNotEmpty ? vehicles.first : null;
+          _isVehiclesLoading = false;
+        });
+      } else {
+        setState(() {
+          _vehicles = [];
+          _selectedVehicle = null;
+          _isVehiclesLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _vehicles = [];
+        _selectedVehicle = null;
+        _isVehiclesLoading = false;
+      });
     }
   }
 
@@ -349,40 +351,42 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(width: 12),
                   // Araç Seçici Widget'ı
                   Expanded(
-                    child: _vehicles.isNotEmpty
-                        ? VehicleSelector(
-                            vehicles: _vehicles,
-                            initialVehicle: _selectedVehicle,
-                            onChanged: (vehicle) {
-                              if (mounted) {
-                                setState(() {
-                                  _selectedVehicle = vehicle;
-                                });
-                              }
-                            },
-                          )
-                        : Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(18),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
+                    child: _isVehiclesLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _vehicles.isNotEmpty
+                            ? VehicleSelector(
+                                vehicles: _vehicles,
+                                initialVehicle: _selectedVehicle!,
+                                onChanged: (vehicle) {
+                                  if (mounted) {
+                                    setState(() {
+                                      _selectedVehicle = vehicle;
+                                    });
+                                  }
+                                },
+                              )
+                            : Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(18),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.04),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.error_outline, color: Colors.red, size: 32),
-                                const SizedBox(width: 10),
-                                Text("Araç Yok", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
-                              ],
-                            ),
-                          ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.error_outline, color: Colors.red, size: 32),
+                                    const SizedBox(width: 10),
+                                    Text("Araç Yok", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+                                  ],
+                                ),
+                              ),
                   ),
                 ],
               ),

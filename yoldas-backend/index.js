@@ -29,6 +29,7 @@ const forgotPasswordRoute = require("./routes/forgotPassword.routes");
 const resetPasswordRoutes = require("./routes/resetPassword.routes");
 const orderRoutes = require("./routes/order.routes");
 const gasStationRoutes = require("./routes/gas_station.routes");
+const vehicleRoutes = require("./routes/vehicle.routes");
 
 // ✅ Yeni eklediğimiz route:
 
@@ -40,6 +41,7 @@ app.use("/api", forgotPasswordRoute);
 app.use("/api", resetPasswordRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/gas-stations", gasStationRoutes);
+app.use("/api/vehicles", vehicleRoutes);
 
 // ✅ Yeni route'u tanımladık:
 

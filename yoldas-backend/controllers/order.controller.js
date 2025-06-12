@@ -5,15 +5,17 @@ const prisma = new PrismaClient();
 exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.user.id;
+    console.log('userId: ', userId);
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { role: true },
     });
+    console.log('user: ', user);
 
     let orders;
     if (user.role === 'serviceprovider') {
       // Servis sağlayıcı için tüm siparişleri getir
       orders = await prisma.order.findMany({
+        where: { gasStationId: user.gasStationId },
         include: {
           gasStation: true,
         },
@@ -61,6 +63,7 @@ exports.createOrder = async (req, res) => {
         address,
         totalAmount,
         deliveryTime,
+        status: 'pending',
         cardNumber,
         cardHolder,
         userId,

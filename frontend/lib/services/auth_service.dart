@@ -117,7 +117,11 @@ Future<bool> requestPasswordReset(String email) async {
 }
 
 Future<bool> addVehicle(Map<String, dynamic> vehicleData, String jwtToken) async {
-  final url = Uri.parse('${AppConfig.baseUrl}/vehicles');
+  final url = Uri.parse('${AppConfig.baseUrl}/vehicles/add');
+  print('Araç ekleme URL: $url');
+  print('Araç ekleme body: ${jsonEncode(vehicleData)}');
+
+
   final response = await http.post(
     url,
     headers: {
@@ -128,19 +132,26 @@ Future<bool> addVehicle(Map<String, dynamic> vehicleData, String jwtToken) async
   );
   print('Araç ekleme status: \\${response.statusCode}');
   print('Araç ekleme body: \\${response.body}');
-  return response.statusCode == 201;
+  return response.statusCode == 201 || response.statusCode == 200;
 }
 
 Future<List<Map<String, dynamic>>> fetchVehicles(String userId, String jwtToken) async {
-  final url = Uri.parse('${AppConfig.baseUrl}/api/vehicles?userId=$userId');
+  final url = Uri.parse('${AppConfig.baseUrl}/vehicles/');
+
+  print('Araçları getirme URL: $url');
+
   final response = await http.get(
     url,
     headers: {
       'Authorization': 'Bearer $jwtToken',
     },
   );
+  print('Araçlar: ${response.body}');
+
   if (response.statusCode == 200) {
-    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+    final decoded = jsonDecode(response.body);
+    final vehiclesList = decoded['vehicles'] as List;
+    return List<Map<String, dynamic>>.from(vehiclesList);
   }
   return [];
 } 

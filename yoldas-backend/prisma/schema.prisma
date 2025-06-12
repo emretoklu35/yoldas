@@ -19,8 +19,8 @@ model Order {
   cardNumber  String?  // Son 4 hane
   cardHolder  String?  // Kart sahibi adı
   totalAmount Float
-  gasStationId Int?    // Seçilen istasyon ID'si
-  gasStation  GasStation? @relation(fields: [gasStationId], references: [id])
+  gasStationId String?    // Seçilen istasyon ID'si
+  gasStation  GasStation? @relation(fields: [gasStationId], references: [placeId])
 
  serviceProviderId Int?
  serviceProvider   User?     @relation(name: "ServiceProviderOrder", fields: [serviceProviderId], references: [id])
@@ -34,8 +34,8 @@ model User {
   email     String   @unique
   password  String
   role      String   @default("user")
-  gasStationId Int?
-  gasStation  GasStation? @relation(fields: [gasStationId], references: [id])
+  gasStationId String?
+  gasStation  GasStation? @relation(fields: [gasStationId], references: [placeId])
   name      String?
   phone     String?
   gender    String?
@@ -48,6 +48,7 @@ model User {
 
   orders    Order[]  // Kullanıcının siparişleri
   providedOrders    Order[]   @relation(name: "ServiceProviderOrder")  // servis provider orderlari
+  vehicles Vehicle[]
 }
 
 model GasStation {
@@ -66,3 +67,16 @@ model GasStation {
   @@map("gas_stations")
 }
 
+model Vehicle {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  carName String
+  plate String
+  brand String
+  model String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("vehicles")
+}

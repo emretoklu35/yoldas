@@ -82,7 +82,7 @@ class _VehiclesPageState extends State<VehiclesPage> {
               if (formKey.currentState?.validate() != true) return;
               if (user == null || token == null) return;
               final vehicleData = {
-                'name': nameController.text,
+                'carName': nameController.text,
                 'plate': plateController.text,
                 'brand': brandController.text,
                 'model': modelController.text,
@@ -148,7 +148,7 @@ class _VehiclesPageState extends State<VehiclesPage> {
                               final v = _vehicles[index];
                               return ListTile(
                                 leading: const Icon(Icons.directions_car, color: Colors.indigo, size: 32),
-                                title: Text(v['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                title: Text(v['carName'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                                 subtitle: Text('${v['plate'] ?? ''} • ${v['brand'] ?? ''} ${v['model'] ?? ''}', style: const TextStyle(fontSize: 13, color: Colors.grey)),
                                 trailing: Icon(Icons.more_horiz, color: Colors.grey[600]),
                               );
