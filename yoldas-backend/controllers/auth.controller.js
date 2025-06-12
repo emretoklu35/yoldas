@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
 
 exports.register = async (req, res) => {
-  const { email, password, name, phone, gender, birthday } = req.body;
+  console.log('body: ', req.body);
+  const { email, password, name, phone, gender, birthday, role, gasStationId } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required." });
@@ -18,17 +19,36 @@ exports.register = async (req, res) => {
       return res.status(409).json({ error: "User already exists." });
     }
 
+    // Eğer servis sağlayıcı ise gasStationId kontrolü yap
+    if (role === "serviceprovider") {
+      console.log(' ---------- >>>  In SERVICEPROVIDER', gasStationId);
+      if (!gasStationId) {
+        return res.status(400).json({ error: "Service provider must have a gasStationId." });
+      }
+
+      const gasStation = await prisma.gasStation.findUnique({
+        where: { placeId: gasStationId },
+      });
+
+      console.log('gasStationExists: ', gasStation);
+
+      if (!gasStation) {
+        return res.status(404).json({ error: "Gas station not found." });
+      }
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        role: "user",
+        role: role,
         name,
         phone,
         gender,
         birthday: birthday ? new Date(birthday) : null,
+        //gasStationId: role === 'serviceprovider' && gasStationId ? Number(gasStationId) : null,
       },
     });
 
@@ -44,11 +64,12 @@ exports.register = async (req, res) => {
         phone: user.phone,
         gender: user.gender,
         birthday: user.birthday,
+        gasStationId: user.gasStationId,
       },
     });
   } catch (error) {
-    console.error("Kayıt hatası:", error);
-    res.status(500).json({ error: "Registration failed." });
+    console.error("Kayıt hatası:", error, error.meta);
+    res.status(500).json({ error: "Registration failed.", detail: error.message, meta: error.meta });
   }
 };
 
@@ -80,6 +101,7 @@ exports.login = async (req, res) => {
         phone: user.phone,
         gender: user.gender,
         birthday: user.birthday,
+        gasStationId: user.gasStationId,
       }
     });
   } catch (error) {

@@ -268,227 +268,221 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget mainContent = Scaffold(
+    return Scaffold(
       backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              const Center(
-                child: Text(
-                  'Yoldaş',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.indigo, // Ana renk
-                    letterSpacing: 1.5, // Harf aralığı
-                  ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            const Center(
+              child: Text(
+                'Yoldaş',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.indigo,
+                  letterSpacing: 1.5,
                 ),
               ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start, // Hizalamayı iyileştir
-                  children: [
-                    // Konum Bilgisi Alanı
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _openLocationInMaps,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(18), // VehicleSelector ile uyumlu
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05), // Hafif gölge
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.location_on, color: Colors.indigo, size: 30),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center, // Dikeyde ortala
-                                  children: [
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Konum Bilgisi Alanı
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _openLocationInMaps,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.location_on, color: Colors.indigo, size: 30),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _address ?? 'Konum bekleniyor...',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (_position != null)
                                     Text(
-                                      _address ?? 'Konum bekleniyor...',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),
+                                      'Lat: ${_position!.latitude.toStringAsFixed(3)}, Lng: ${_position!.longitude.toStringAsFixed(3)}',
+                                      style: const TextStyle(fontSize: 11.5, color: Colors.grey),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    if (_position != null)
-                                      Text(
-                                        'Lat: ${_position!.latitude.toStringAsFixed(3)}, Lng: ${_position!.longitude.toStringAsFixed(3)}',
-                                        style: const TextStyle(fontSize: 11.5, color: Colors.grey),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.refresh, size: 22, color: Colors.grey),
-                                onPressed: _getLocation,
-                                tooltip: 'Konumu Yenile',
-                                padding: EdgeInsets.zero, // Ekstra paddingi kaldır
-                                constraints: const BoxConstraints(), // Ekstra paddingi kaldır
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Araç Seçici Widget'ı
-                    Expanded(
-                      child: _vehicles.isNotEmpty
-                          ? VehicleSelector(
-                              vehicles: _vehicles,
-                              initialVehicle: _selectedVehicle,
-                              onChanged: (vehicle) {
-                                if (mounted) {
-                                  setState(() {
-                                    _selectedVehicle = vehicle;
-                                  });
-                                }
-                              },
-                            )
-                          : Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.error_outline, color: Colors.red, size: 32),
-                                  const SizedBox(width: 10),
-                                  Text("Araç Yok", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
                                 ],
                               ),
                             ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              // Harita Alanı
-              if (_position != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: SizedBox(
-                    height: 250, // Harita yüksekliği
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20), // Yuvarlak köşeler
-                      child: GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                          target: LatLng(_position!.latitude, _position!.longitude),
-                          zoom: 14.5,
+                            IconButton(
+                              icon: const Icon(Icons.refresh, size: 22, color: Colors.grey),
+                              onPressed: _getLocation,
+                              tooltip: 'Konumu Yenile',
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ],
                         ),
-                        myLocationEnabled: true,
-                        myLocationButtonEnabled: true,
-                        onMapCreated: (controller) {
-                           if(mounted){
-                            setState(() { // setState içinde _mapController ataması
-                              _mapController = controller;
-                            });
-                           }
-                        },
-                        markers: _markers,
-                        zoomControlsEnabled: false, // Yakınlaştırma butonlarını kaldır
-                        mapToolbarEnabled: false, // Harita araç çubuğunu kaldır
                       ),
                     ),
                   ),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
-                  child: Center(
-                    child: _address == "Konum alınıyor..."
-                        ? const CircularProgressIndicator()
-                        : Text(
-                            _address ?? "Harita yüklenemedi. Konum bilgisi gerekiyor.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  const SizedBox(width: 12),
+                  // Araç Seçici Widget'ı
+                  Expanded(
+                    child: _vehicles.isNotEmpty
+                        ? VehicleSelector(
+                            vehicles: _vehicles,
+                            initialVehicle: _selectedVehicle,
+                            onChanged: (vehicle) {
+                              if (mounted) {
+                                setState(() {
+                                  _selectedVehicle = vehicle;
+                                });
+                              }
+                            },
+                          )
+                        : Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.error_outline, color: Colors.red, size: 32),
+                                const SizedBox(width: 10),
+                                Text("Araç Yok", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+                              ],
+                            ),
                           ),
                   ),
-                ),
-              const SizedBox(height: 24),
-              // Butonlar Alanı
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.count(
-                  crossAxisCount: 3, // Yatayda 3 buton
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12, // Dikey boşluk
-                  crossAxisSpacing: 12, // Yatay boşluk
-                  childAspectRatio: 1.05, // Butonların en/boy oranı
-                  children: [
-                    _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt Siparişi', onTap: _onFuelTap),
-                    _HomeIconButton(icon: Icons.ev_station, label: 'Şarj Siparişi', onTap: _onChargingTap),
-                    _HomeIconButton(icon: Icons.battery_charging_full, label: 'Akü Siparişi', onTap: _onBatteryTap),
-                    _HomeIconButton(icon: Icons.tire_repair_rounded, label: 'Lastik Siparişi', onTap: _onTireTap),
-                    // Diğer butonlar buraya eklenebilir, örneğin:
-                    // _HomeIconButton(icon: Icons.car_crash_outlined, label: 'Servis', onTap: () {}),
-                    // _HomeIconButton(icon: Icons.document_scanner_outlined, label: 'Belgeler', onTap: () {}),
-                  ],
-                ),
+                ],
               ),
-              const SizedBox(height: 32),
-              // Duyurular Alanı
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16,0,16,24), // Alt boşluk eklendi
-                child: Container(
-                  width: double.infinity,
-                  height: 100, // Yükseklik ayarlandı
-                  decoration: BoxDecoration(
-                    color: Colors.white,
+            ),
+            const SizedBox(height: 24),
+            // HARİTA ALANI
+            if (_position != null)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                     boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Duyurular Alanı', // Metin güncellendi
-                      style: TextStyle(fontSize: 20, color: Color(0xFF3A4668), fontWeight: FontWeight.w500),
+                    child: GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(_position!.latitude, _position!.longitude),
+                        zoom: 14.5,
+                      ),
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      onMapCreated: (controller) {
+                        if (mounted) {
+                          setState(() {
+                            _mapController = controller;
+                          });
+                        }
+                      },
+                      markers: _markers,
+                      zoomControlsEnabled: false,
+                      mapToolbarEnabled: false,
                     ),
                   ),
                 ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
+                child: Center(
+                  child: _address == "Konum alınıyor..."
+                      ? const CircularProgressIndicator()
+                      : Text(
+                          _address ?? "Harita yüklenemedi. Konum bilgisi gerekiyor.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                        ),
+                ),
               ),
-            ],
-          ),
+            const SizedBox(height: 24),
+            // Butonlar Alanı
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: GridView.count(
+                crossAxisCount: 3,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+                childAspectRatio: 1.05,
+                children: [
+                  _HomeIconButton(icon: Icons.local_gas_station, label: 'Yakıt Siparişi', onTap: _onFuelTap),
+                  _HomeIconButton(icon: Icons.ev_station, label: 'Şarj Siparişi', onTap: _onChargingTap),
+                  _HomeIconButton(icon: Icons.battery_charging_full, label: 'Akü Siparişi', onTap: _onBatteryTap),
+                  _HomeIconButton(icon: Icons.tire_repair_rounded, label: 'Lastik Siparişi', onTap: _onTireTap),
+                ],
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Duyurular Alanı
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16,0,16,24),
+              child: Container(
+                width: double.infinity,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: Text(
+                    'Duyurular Alanı',
+                    style: TextStyle(fontSize: 20, color: Color(0xFF3A4668), fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          if (index == 1) { // Profil sekmesi
-            _onProfileTap(); // Doğrudan profil sayfasına yönlendir
-          } else { // Ana Sayfa sekmesi
+          if (index == 1) {
+            _onProfileTap();
+          } else {
             if (_selectedIndex != index) {
               if (mounted) {
                 setState(() {
@@ -515,10 +509,6 @@ class _HomePageState extends State<HomePage> {
         type: BottomNavigationBarType.fixed, // Etiketler her zaman görünür
       ),
     );
-
-    // _selectedIndex 0 ise ana içeriği, değilse (şu an için) boş bir Container döndürür.
-    // Profil sayfası BottomNav üzerinden yönetilecekse, _selectedIndex == 1 durumunda ProfilePage() döndürülmeli.
-    return _selectedIndex == 0 ? mainContent : Container(); // Profil sayfası Navigator ile açıldığı için
   }
 }
 

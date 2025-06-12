@@ -5,7 +5,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.1.0 <4.0.0"
+  sdk: '^3.7.0'
 
 dependencies:
   flutter:
@@ -16,6 +16,7 @@ dependencies:
   http: ^0.13.6                             # ✅ API istekleri için
   flutter_secure_storage: ^9.0.0           # ✅ Token saklamak için
   shared_preferences: ^2.2.2               # ✅ Local storage için
+  network_info_plus: ^4.1.0                # ✅ IP adresi tespiti için
   geolocator: ^14.0.1
   geocoding: ^4.0.0
   google_maps_flutter: ^2.12.2
@@ -32,5 +33,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/kadin.png
+    - assets/logo.png
     - assets/erkek.png
+    - assets/kadin.png
+  fonts:
+    - family: Pacifico
+      fonts:
+        - asset: assets/fonts/Pacifico-Regular.ttf

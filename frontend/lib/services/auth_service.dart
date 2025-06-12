@@ -12,8 +12,11 @@ Future<void> register({
   required String password,
   required String phone,
   required String role,
+  required String gasStationId,
 }) async {
   print('Register fonksiyonu çağrıldı: email=$email, role=$role');
+  print('name: $name, email: $email, password: $password, phone: $phone, role: $role, gasStationId: $gasStationId');
+
   final response = await http.post(
     Uri.parse('${AppConfig.baseUrl}/auth/register'),
     headers: {'Content-Type': 'application/json'},
@@ -23,6 +26,7 @@ Future<void> register({
       'password': password,
       'phone': phone,
       'role': role,
+      'gasStationId': gasStationId,
     }),
   );
 
@@ -94,4 +98,49 @@ Future<Map<String, dynamic>> getCurrentUser() async {
     throw Exception('Kullanıcı bulunamadı');
   }
   return jsonDecode(userStr);
+}
+
+Future<bool> requestPasswordReset(String email) async {
+  final url = Uri.parse('${AppConfig.baseUrl}/auth/forgot-password');
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'email': email}),
+  );
+  if (response.statusCode == 200) {
+    print('Şifre sıfırlama isteği başarılı: \\${response.body}');
+    return true;
+  } else {
+    print('Şifre sıfırlama isteği başarısız! Kodu: \\${response.statusCode}, Mesaj: \\${response.body}');
+    return false;
+  }
+}
+
+Future<bool> addVehicle(Map<String, dynamic> vehicleData, String jwtToken) async {
+  final url = Uri.parse('${AppConfig.baseUrl}/vehicles');
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $jwtToken',
+    },
+    body: jsonEncode(vehicleData),
+  );
+  print('Araç ekleme status: \\${response.statusCode}');
+  print('Araç ekleme body: \\${response.body}');
+  return response.statusCode == 201;
+}
+
+Future<List<Map<String, dynamic>>> fetchVehicles(String userId, String jwtToken) async {
+  final url = Uri.parse('${AppConfig.baseUrl}/api/vehicles?userId=$userId');
+  final response = await http.get(
+    url,
+    headers: {
+      'Authorization': 'Bearer $jwtToken',
+    },
+  );
+  if (response.statusCode == 200) {
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+  }
+  return [];
 } 

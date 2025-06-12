@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'dart:developer';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
+import '../services/gas_station_service.dart';
 
 class PhoneNumberInputFormatter extends TextInputFormatter {
   @override
@@ -30,9 +32,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final _phoneController = TextEditingController();
   String? _selectedGender;
   String? _selectedRole;
+  String? _selectedService;
   DateTime? _selectedBirthday;
   String errorText = '';
   bool _isLoading = false;
+  bool _isGasStationsLoading = false;
+  List<Map<String, dynamic>> _gasStations = [];
 
   Future<void> _pickBirthday() async {
     final now = DateTime.now();
@@ -55,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
     String phone = _phoneController.text.trim();
     String? gender = _selectedGender;
     String? role = _selectedRole;
+    String? selectedService = _selectedService;
     DateTime? birthday = _selectedBirthday;
 
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty || 
@@ -86,12 +92,16 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     try {
+      // print all the values
+      print('-=-=-=-=--=-=-=-=--=-=-=-=--');
+      print('name: $name, email: $email, password: $password, phone: $phone, role: $role, gasStationId: $selectedService');
       await register(
         name: name,
         email: email,
         password: password,
         phone: phone,
         role: role,
+        gasStationId: selectedService ?? '',
       );
 
       if (!mounted) return;
@@ -107,6 +117,32 @@ class _SignUpPageState extends State<SignUpPage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+
+  Future<void> _getAllGasStations() async {
+    setState(() {
+      _isGasStationsLoading = true;
+    });
+
+    try {
+      final stations = await getAllGasStations();
+      setState(() {
+        _gasStations = stations;
+        _isGasStationsLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        log("Yakındaki istasyonlar yüklenirken hata oluştu: $e");
+        _isGasStationsLoading = false;
+      });
+    }
+  }
+
+    @override
+  void initState() {
+    super.initState();
+    _getAllGasStations();
   }
 
   @override
@@ -228,6 +264,29 @@ class _SignUpPageState extends State<SignUpPage> {
                             fillColor: Colors.grey.shade50,
                           ),
                         ),
+                        // Only display services if role is serviceprovider
+                        if(_selectedRole == 'serviceprovider') ...[
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: _selectedService,
+                          items: _gasStations.map<DropdownMenuItem<String>>((station) {
+                            return DropdownMenuItem<String>(
+                              value: station['placeId'],
+                              child: Text(station['name']),
+                            );
+                          }).toList(),
+                          onChanged: (val) => setState(() => _selectedService = val),
+                          decoration: InputDecoration(
+                            labelText: 'Servisler',
+                            prefixIcon: const Icon(Icons.business),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey.shade50,
+                          ),
+                        ),
+                        ],
                         const SizedBox(height: 16),
                         InkWell(
                           onTap: _pickBirthday,

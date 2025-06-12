@@ -58,4 +58,19 @@ exports.getNearbyGasStations = async (req, res) => {
       details: error.message 
     });
   }
+};
+
+  exports.findMany = async (req, res) => {
+  try {
+    // get all
+    const stations = await prisma.gasStation.findMany();
+    
+    res.json(stations);
+  } catch (error) {
+    console.error("İstasyonlar getirilirken hata:", error);
+    res.status(500).json({ 
+      error: "İstasyonlar getirilemedi.",
+      details: error.message 
+    });
+  }
 }; 

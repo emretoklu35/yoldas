@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// add userId relation in here
 model Order {
   id          Int      @id @default(autoincrement())
   userId      Int
@@ -20,6 +21,10 @@ model Order {
   totalAmount Float
   gasStationId Int?    // Seçilen istasyon ID'si
   gasStation  GasStation? @relation(fields: [gasStationId], references: [id])
+
+ serviceProviderId Int?
+ serviceProvider   User?     @relation(name: "ServiceProviderOrder", fields: [serviceProviderId], references: [id])
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
 }
@@ -29,17 +34,20 @@ model User {
   email     String   @unique
   password  String
   role      String   @default("user")
+  gasStationId Int?
+  gasStation  GasStation? @relation(fields: [gasStationId], references: [id])
   name      String?
   phone     String?
   gender    String?
   birthday  DateTime?
-  orders    Order[]  // Kullanıcının siparişleri
   services  Json?    // Hizmet sağlayıcı için hizmet bilgileri
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
   resetToken       String?   
   resetTokenExpiry DateTime? 
+
+  orders    Order[]  // Kullanıcının siparişleri
+  providedOrders    Order[]   @relation(name: "ServiceProviderOrder")  // servis provider orderlari
 }
 
 model GasStation {
@@ -49,9 +57,11 @@ model GasStation {
   latitude  Float
   longitude Float
   address   String?
-  orders    Order[]  // İstasyonun siparişleri
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
+  
+  orders    Order[]  // İstasyonun siparişleri
+  user      User[] 
 
   @@map("gas_stations")
 }

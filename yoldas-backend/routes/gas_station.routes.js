@@ -9,4 +9,7 @@ router.post("/add", verifyToken, gasStationController.addGasStation);
 // Yakındaki istasyonları getir
 router.get("/nearby", verifyToken, gasStationController.getNearbyGasStations);
 
+// Butun istasyonlari dondur
+router.get("/many", gasStationController.findMany)
+
 module.exports = router; 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yoldas/auth_service.dart';
+import '../services/auth_service.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -16,11 +16,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<void> _resetPassword() async {
     String email = _emailController.text.trim();
     if (email.isEmpty) {
-      setState(() => infoText = 'E-posta adresinizi girin.');
+      setState(() => infoText = 'Lütfen e-posta adresinizi girin.');
       return;
     }
     if (!email.contains('@')) {
-      setState(() => infoText = 'Geçerli bir e-posta girin.');
+      setState(() => infoText = 'Geçerli bir e-posta adresi girin.');
       return;
     }
 
@@ -36,7 +36,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       if (success) {
         infoText = 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.';
       } else {
-        infoText = 'Şifre sıfırlama isteği gönderilemedi. Lütfen tekrar deneyin.';
+        infoText = 'Şifre sıfırlama isteği başarısız. Lütfen e-posta adresinizi kontrol edin veya daha sonra tekrar deneyin.';
       }
     });
   }
@@ -79,7 +79,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _resetPassword,
                   child: _isLoading
-                      ? const CircularProgressIndicator()
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                        )
                       : const Text('Şifreyi Sıfırla'),
                 ),
               ),

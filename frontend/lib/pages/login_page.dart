@@ -68,7 +68,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Container(
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -81,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Form(
               key: _formKey,
               child: Column(
@@ -181,6 +183,22 @@ class _LoginPageState extends State<LoginPage> {
                                 textAlign: TextAlign.center,
                               ),
                             ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/forgot-password');
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.indigo,
+                              ),
+                              child: const Text(
+                                'Şifremi unuttum',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: _isLoading ? null : _login,

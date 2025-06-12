@@ -13,6 +13,7 @@ import 'pages/tire_page.dart';
 import 'pages/reset_password_page.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
+import 'config/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,10 @@ void main() async {
     url: 'https://myqswbvbkagapzubnisp.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15cXN3YnZia2FnYXB6dWJuaXNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg4NjM0MTAsImV4cCI6MjA2NDQzOTQxMH0.d-cmNQW3CqqAhp_1tjseiVWAHDTNtXxiAOLWSB_RSaw',
   );
+  
+  // IP adresini otomatik tespit et
+  await AppConfig.detectAndUpdateIp();
+  
   runApp(const YoldasApp());
 }
 

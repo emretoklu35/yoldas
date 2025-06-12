@@ -76,3 +76,26 @@ Future<List<Map<String, dynamic>>> getNearbyGasStations() async {
     throw Exception('İstasyonlar getirilirken bir hata oluştu: $e');
   }
 } 
+
+Future<List<Map<String, dynamic>>> getAllGasStations() async {
+  try {
+    final url = Uri.parse('${AppConfig.baseUrl}/gas-stations/many');
+    
+    final response = await http.get(
+      url,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> stationsJson = json.decode(response.body);
+      return stationsJson.map((json) => json as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('İstasyonlar getirilemedi: ${response.body}');
+    }
+  } catch (e) {
+    print('Hata: $e');
+    throw Exception('İstasyonlar getirilirken bir hata oluştu: $e');
+  }
+} 
