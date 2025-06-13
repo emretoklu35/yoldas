@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'checkout_page.dart';
 import 'create_order_page.dart';
+import '../services/gas_station_service.dart';
 
 class BatteryPage extends StatefulWidget {
   const BatteryPage({super.key});
@@ -14,6 +15,10 @@ class _BatteryPageState extends State<BatteryPage> {
   double batteryCost = 0;
   double serviceFee = 150;
   double total = 0;
+  String? _selectedGasStationId;
+  List<Map<String, dynamic>> _nearbyStations = [];
+  bool _isLoadingStations = false;
+  String _stationError = '';
 
   final List<Map<String, dynamic>> batteryOptions = [
     {
@@ -74,6 +79,27 @@ class _BatteryPageState extends State<BatteryPage> {
     super.initState();
     selectedBattery = batteryOptions.first['name'];
     _calculateTotal();
+    _loadNearbyStations();
+  }
+
+  Future<void> _loadNearbyStations() async {
+    setState(() {
+      _isLoadingStations = true;
+      _stationError = '';
+    });
+
+    try {
+      final stations = await getNearbyGasStations();
+      setState(() {
+        _nearbyStations = stations;
+        _isLoadingStations = false;
+      });
+    } catch (e) {
+      setState(() {
+        _stationError = 'Yakındaki istasyonlar yüklenirken hata oluştu: $e';
+        _isLoadingStations = false;
+      });
+    }
   }
 
   @override
@@ -139,6 +165,51 @@ class _BatteryPageState extends State<BatteryPage> {
           ),
           const SizedBox(height: 24),
           const Text(
+            "Akü İstasyonu Seçimi",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          if (_isLoadingStations)
+            const Center(child: CircularProgressIndicator())
+          else if (_stationError.isNotEmpty)
+            Center(
+              child: Text(
+                _stationError,
+                style: const TextStyle(color: Colors.red),
+              ),
+            )
+          else if (_nearbyStations.isEmpty)
+            const Center(
+              child: Text(
+                'Yakınızda istasyon bulunamadı. Lütfen haritadan istasyon seçin.',
+                style: TextStyle(color: Colors.orange),
+              ),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedGasStationId,
+                  isExpanded: true,
+                  hint: const Text('İstasyon Seçin'),
+                  items: _nearbyStations.map((station) {
+                    return DropdownMenuItem<String>(
+                      value: station['placeId'] as String,
+                      child: Text(station['name'] as String),
+                    );
+                  }).toList(),
+                  onChanged: (val) => setState(() => _selectedGasStationId = val),
+                ),
+              ),
+            ),
+          const SizedBox(height: 24),
+          const Text(
             "Özet",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -162,22 +233,26 @@ class _BatteryPageState extends State<BatteryPage> {
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CreateOrderPage(
-                    serviceType: 'battery',
-                    totalAmount: total,
-                  ),
-                ),
-              );
-              if (result == true) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Siparişiniz oluşturuldu')),
-                );
-              }
-            },
+            onPressed: (total > 0 && _selectedGasStationId != null)
+                ? () async {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateOrderPage(
+                          serviceType: 'battery',
+                          totalAmount: total,
+                          gasStationId: _selectedGasStationId,
+                        ),
+                      ),
+                    );
+
+                    if (result == true) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Siparişiniz oluşturuldu')),
+                      );
+                    }
+                  }
+                : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
               disabledBackgroundColor: Colors.grey,

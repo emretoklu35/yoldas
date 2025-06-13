@@ -11,6 +11,7 @@ import 'pages/profile_page.dart';
 import 'pages/charging_page.dart';
 import 'pages/tire_page.dart';
 import 'pages/reset_password_page.dart';
+import 'pages/service_provider_dashboard.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
 import 'config/app_config.dart';
@@ -106,6 +107,8 @@ class _YoldasAppState extends State<YoldasApp> {
         '/forgot-password': (context) => const ForgotPasswordPage(),
         '/charging': (context) => const ChargingPage(),
         '/tire': (context) => const TirePage(),
+        '/login': (context) => const LoginPage(),
+        '/service-provider-dashboard': (context) => const ServiceProviderDashboard(),
       },
     );
   }

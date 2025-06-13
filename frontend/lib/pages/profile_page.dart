@@ -169,19 +169,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ),
                               _ProfileMenuItem(
-                                icon: Icons.account_balance_wallet_outlined,
-                                text: 'Cüzdan',
-                                onTap: () => _showInfoDialog(context, 'Cüzdan'),
-                              ),
-                              _ProfileMenuItem(
                                 icon: Icons.headset_mic_outlined,
                                 text: 'Bize Ulaşın',
-                                onTap: () => _showInfoDialog(context, 'Bize Ulaşın'),
-                              ),
-                              _ProfileMenuItem(
-                                icon: Icons.chat_outlined,
-                                text: 'Bizimle Sohbet Et',
-                                onTap: () => _showInfoDialog(context, 'Bizimle Sohbet Et'),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Bize Ulaşın'),
+                                      content: const Text('destek@yoldas.com adresinden bize ulaşabilirsiniz.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('Tamam'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
                               ),
                               const SizedBox(height: 32),
                             ],

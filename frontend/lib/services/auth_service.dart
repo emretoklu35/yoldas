@@ -76,10 +76,18 @@ Future<Map<String, dynamic>> login(String email, String password) async {
 }
 
 Future<void> logout() async {
-  await storage.delete(key: 'jwt');
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('token');
-  await prefs.remove('user');
+  print('Logout fonksiyonu çağrıldı');
+  try {
+    await storage.delete(key: 'jwt');
+    print('JWT token silindi');
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    await prefs.remove('user');
+    print('SharedPreferences verileri silindi');
+  } catch (e) {
+    print('Logout sırasında hata: $e');
+    throw Exception('Çıkış yapılırken bir hata oluştu: $e');
+  }
 }
 
 Future<String?> getToken() async {

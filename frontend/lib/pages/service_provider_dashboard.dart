@@ -96,6 +96,24 @@ class _ServiceProviderDashboardState extends State<ServiceProviderDashboard> {
     }
   }
 
+  Future<void> _handleLogout() async {
+    try {
+      await logout();
+      if (!mounted) return;
+      
+      // Tüm route'ları temizleyip login sayfasına yönlendir
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/login',
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Çıkış yapılırken hata oluştu: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,11 +125,7 @@ class _ServiceProviderDashboardState extends State<ServiceProviderDashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await logout();
-              if (!mounted) return;
-              Navigator.pushReplacementNamed(context, '/login');
-            },
+            onPressed: _handleLogout,
           ),
         ],
       ),
