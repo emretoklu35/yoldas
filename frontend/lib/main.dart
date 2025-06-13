@@ -15,6 +15,7 @@ import 'pages/service_provider_dashboard.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:async';
 import 'config/app_config.dart';
+import 'pages/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,9 +96,10 @@ class _YoldasAppState extends State<YoldasApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      initialRoute: '/',
+      initialRoute: '/splash',
       navigatorKey: navigatorKey,
       routes: {
+        '/splash': (context) => const SplashScreen(),
         '/': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
         '/fuel': (context) => const FuelPage(),
